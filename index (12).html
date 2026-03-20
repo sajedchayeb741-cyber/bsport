@@ -402,8 +402,10 @@ input[type=file]{display:none}
       <button class="bs ghost" onclick="go('page-player')">📺 Voir lecteur</button>
       <!-- Discord config -->
       <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
-        <input class="a-input" id="telegramInput" type="text" placeholder="Lien Telegram..." style="margin:0;width:180px"/>
-        <input class="a-input" id="discordInput" type="text" placeholder="Lien Discord..." style="margin:0;width:180px"/>
+        <input class="a-input" id="gistIdInput" type="text" placeholder="Gist ID" style="margin:0;width:140px"/>
+        <input class="a-input" id="gistTokenInput" type="password" placeholder="GitHub Token" style="margin:0;width:150px"/>
+        <input class="a-input" id="telegramInput" type="text" placeholder="Lien Telegram..." style="margin:0;width:160px"/>
+        <input class="a-input" id="discordInput" type="text" placeholder="Lien Discord..." style="margin:0;width:160px"/>
         <button class="bs red" onclick="saveLinks()">💾 Sauver liens</button>
         <button class="bs ghost" onclick="resetVisits()" title="Remet le compteur de visites à 0 (reteste le splash)">🔄 Reset splash</button>
       </div>
@@ -620,29 +622,117 @@ function toast(msg, err=false) {
 }
 
 // ─── STORAGE ───
-function savePrograms() {
-  // Store without base64 images in localStorage to avoid quota
-  localStorage.setItem('bsport:programs', JSON.stringify(programs));
+// ─── GITHUB GIST BACKEND ───
+function getGistConfig() {
+  return {
+    token: localStorage.getItem('bsport:gistToken') || '',
+    id:    localStorage.getItem('bsport:gistId')    || ''
+  };
 }
-function loadPrograms() {
+
+async function savePrograms() {
+  localStorage.setItem('bsport:programs', JSON.stringify(programs));
+  updateProgStats();
+  const { token, id } = getGistConfig();
+  if (!token || !id) return;
+  try {
+    await fetch(`https://api.github.com/gists/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        files: {
+          'bsport-data.json': {
+            content: JSON.stringify({ programs, discord: getDiscordLS(), telegram: localStorage.getItem('bsport:telegram') || '' })
+          }
+        }
+      })
+    });
+    toast('✅ Synchronisé avec GitHub !');
+  } catch(e) { console.warn('Gist save error', e); }
+}
+
+async function loadPrograms() {
+  const { token, id } = getGistConfig();
+  if (token && id) {
+    try {
+      const r = await fetch(`https://api.github.com/gists/${id}`, {
+        headers: { 'Authorization': `token ${token}` }
+      });
+      const data = await r.json();
+      const file = data.files && data.files['bsport-data.json'];
+      if (file && file.content) {
+        const parsed = JSON.parse(file.content);
+        if (parsed.programs) {
+          programs = parsed.programs;
+          localStorage.setItem('bsport:programs', JSON.stringify(programs));
+        }
+        if (parsed.discord) saveDiscordLS(parsed.discord);
+        if (parsed.telegram) localStorage.setItem('bsport:telegram', parsed.telegram);
+        updateProgStats();
+        return;
+      }
+    } catch(e) { console.warn('Gist load error', e); }
+  }
+  // Fallback localStorage
   try {
     const d = localStorage.getItem('bsport:programs');
     if (d) programs = JSON.parse(d);
   } catch(e) { programs = []; }
-  document.getElementById('stProgs').textContent = programs.length;
-  document.getElementById('progCount').textContent = programs.length;
+  updateProgStats();
+}
+
+// Called by visitors (public read, no token needed)
+async function loadProgramsPublic() {
+  const id = localStorage.getItem('bsport:gistId') || '';
+  if (id) {
+    try {
+      const r = await fetch(`https://api.github.com/gists/${id}`);
+      const data = await r.json();
+      const file = data.files && data.files['bsport-data.json'];
+      if (file && file.content) {
+        const parsed = JSON.parse(file.content);
+        if (parsed.programs) programs = parsed.programs;
+        if (parsed.discord) saveDiscordLS(parsed.discord);
+        if (parsed.telegram) localStorage.setItem('bsport:telegram', parsed.telegram);
+        updateProgStats();
+        renderGrid();
+        return;
+      }
+    } catch(e) {}
+  }
+  // Fallback
+  try {
+    const d = localStorage.getItem('bsport:programs');
+    if (d) programs = JSON.parse(d);
+  } catch(e) { programs = []; }
+  updateProgStats();
+  renderGrid();
+}
+
+function updateProgStats() {
+  const el1 = document.getElementById('stProgs');
+  const el2 = document.getElementById('progCount');
+  if (el1) el1.textContent = programs.length;
+  if (el2) el2.textContent = programs.length;
 }
 
 function saveDiscordLS(url) { localStorage.setItem('bsport:discord', url); }
 function getDiscordLS() { return localStorage.getItem('bsport:discord') || DISCORD_DEFAULT; }
 
 function saveLinks() {
-  const discord = document.getElementById('discordInput').value.trim();
+  const discord  = document.getElementById('discordInput').value.trim();
   const telegram = document.getElementById('telegramInput').value.trim();
-  if (discord) { saveDiscordLS(discord); }
-  if (telegram) { localStorage.setItem('bsport:telegram', telegram); }
+  const gistId   = document.getElementById('gistIdInput') ? document.getElementById('gistIdInput').value.trim() : '';
+  const gistTok  = document.getElementById('gistTokenInput') ? document.getElementById('gistTokenInput').value.trim() : '';
+  if (discord)  saveDiscordLS(discord);
+  if (telegram) localStorage.setItem('bsport:telegram', telegram);
+  if (gistId)   localStorage.setItem('bsport:gistId', gistId);
+  if (gistTok)  localStorage.setItem('bsport:gistToken', gistTok);
   refreshDiscordLinks();
-  toast('Liens sauvegardés !');
+  toast('Configuration sauvegardée !');
 }
 
 function saveDiscord() { saveLinks(); } // keep compat
@@ -657,6 +747,10 @@ function refreshDiscordLinks() {
   document.getElementById('discordInput').value = url;
   const tgInput = document.getElementById('telegramInput');
   if (tgInput) tgInput.value = localStorage.getItem('bsport:telegram') || '';
+  const gistId = document.getElementById('gistIdInput');
+  if (gistId) gistId.value = localStorage.getItem('bsport:gistId') || '';
+  const gistTok = document.getElementById('gistTokenInput');
+  if (gistTok) gistTok.value = localStorage.getItem('bsport:gistToken') ? '••••••••' : '';
   // Update all discord buttons
   ['heroDiscordBtn','discordBtn1','discordBtn2','discordBtn3','discordBtn4','discordBtnMain'].forEach(id => {
     const el = document.getElementById(id);
@@ -863,7 +957,10 @@ function handleThumbUpload(input) {
 
 // ─── PUBLIC PROGRAMS GRID ───
 function renderPublicPrograms() {
-  loadPrograms();
+  // async: loadProgramsPublic will call renderGrid when done
+  loadProgramsPublic();
+}
+function renderGrid() {
   const grid = document.getElementById('programsGrid');
   if (!programs.length) {
     grid.innerHTML = `<div style="grid-column:1/-1"><div class="no-programs"><span>📡</span><p>Aucun programme en direct</p><small style="color:#444;font-size:.75rem">Revenez plus tard ou contactez-nous sur Discord</small></div></div>`;
