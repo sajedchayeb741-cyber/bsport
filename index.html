@@ -4,201 +4,208 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>BSPORT — Live Streaming</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--red:#E8001E;--red-dark:#a80016;--black:#080808;--dark:#111;--card:#161616;--border:#222;--text:#f0f0f0;--muted:#666;--discord:#5865F2;--green:#00c853;--paypal:#009cde}
+:root{--red:#E8001E;--rdd:#a80016;--blk:#080808;--drk:#111;--crd:#161616;--brd:#222;--txt:#f0f0f0;--mut:#666;--dsc:#5865F2;--grn:#00c853;--tg:#29b6f6}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--black);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
+html,body{background:var(--blk);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
 .page{display:none;min-height:100vh;flex-direction:column}
 .page.active{display:flex}
-
-/* NAV */
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;background:rgba(8,8,8,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:3px;cursor:pointer}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:62px;background:rgba(8,8,8,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;cursor:pointer;user-select:none}
 .logo span{color:var(--red)}
-.nav-links{display:flex;gap:8px;align-items:center}
-.nb{padding:8px 18px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:1px;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase}
-.nb.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
-.nb.ghost:hover{border-color:var(--red);color:var(--red)}
-.nb.primary{background:var(--red);color:#fff}
-.nb.primary:hover{background:var(--red-dark)}
-.nb.subtle{background:transparent;color:var(--muted);border:1px solid #1a1a1a;font-size:.7rem;padding:5px 10px}
-.nb.subtle:hover{border-color:var(--muted);color:var(--text)}
-
+.nav-links{display:flex;gap:8px}
+.nb{padding:7px 16px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:1px;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase}
+.nb.g{background:transparent;color:var(--txt);border:1px solid var(--brd)}
+.nb.g:hover{border-color:var(--red);color:var(--red)}
+.nb.r{background:var(--red);color:#fff}
+.nb.r:hover{background:var(--rdd)}
 /* HERO */
-.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 24px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,0,30,.12) 0%,transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 79px,rgba(255,255,255,.02) 80px)}
-.live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,0,30,.12);border:1px solid rgba(232,0,30,.3);color:var(--red);padding:6px 16px;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;animation:fadeUp .6s ease both}
-.live-dot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:pulse 1.4s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4.5rem,13vw,10rem);line-height:.9;letter-spacing:4px;margin-bottom:8px;animation:fadeUp .6s .1s ease both}
-.hero-title .accent{color:var(--red)}
-.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.9rem,2.5vw,1.3rem);font-weight:600;letter-spacing:6px;color:var(--muted);text-transform:uppercase;margin-bottom:44px;animation:fadeUp .6s .2s ease both}
-.hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s .3s ease both}
-.btn-watch{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;padding:16px 40px;border:none;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
-.btn-watch:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(232,0,30,.35)}
-.btn-discord-hero{display:inline-flex;align-items:center;gap:10px;background:transparent;color:var(--text);padding:16px 32px;border:1px solid var(--border);border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none}
-.btn-discord-hero:hover{border-color:var(--discord);color:var(--discord);transform:translateY(-2px)}
-.features{display:flex;justify-content:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--dark);flex-wrap:wrap}
-.feat{flex:1;min-width:140px;max-width:280px;padding:28px 20px;text-align:center;border-right:1px solid var(--border)}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,0,30,.12),transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 79px,rgba(255,255,255,.02) 80px)}
+.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(232,0,30,.1);border:1px solid rgba(232,0,30,.3);color:var(--red);padding:5px 14px;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:22px;animation:fup .6s ease both}
+.dot{width:7px;height:7px;background:var(--red);border-radius:50%;animation:pulse 1.4s infinite}
+.htitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,13vw,10rem);line-height:.9;letter-spacing:4px;margin-bottom:8px;animation:fup .6s .1s ease both}
+.htitle .a{color:var(--red)}
+.hsub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(.9rem,2.5vw,1.3rem);font-weight:700;letter-spacing:6px;color:var(--mut);text-transform:uppercase;margin-bottom:40px;animation:fup .6s .2s ease both}
+.cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:fup .6s .3s ease both}
+.btn-w{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;padding:15px 36px;border:none;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-w:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(232,0,30,.35)}
+.btn-dc{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--txt);padding:15px 28px;border:1px solid var(--brd);border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn-dc:hover{border-color:var(--dsc);color:var(--dsc);transform:translateY(-2px)}
+.feats{display:flex;justify-content:center;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);background:var(--drk);flex-wrap:wrap}
+.feat{flex:1;min-width:130px;max-width:260px;padding:24px 16px;text-align:center;border-right:1px solid var(--brd)}
 .feat:last-child{border-right:none}
-.feat-icon{font-size:1.6rem;margin-bottom:8px}
-.feat-label{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
-.feat-desc{font-size:.8rem;color:var(--muted)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes subPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,0,30,.5)}60%{box-shadow:0 0 0 10px rgba(232,0,30,0)}}
-
-/* PROGRAMS GRID */
-.programs-page{flex:1;display:flex;flex-direction:column}
-.programs-header{padding:28px 32px 0;border-bottom:1px solid var(--border);background:var(--dark)}
-.programs-header h2{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;margin-bottom:4px}
-.programs-header p{font-size:.85rem;color:var(--muted);padding-bottom:20px}
-.programs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:28px 32px;flex:1}
-.prog-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
-.prog-card:hover{border-color:var(--red);transform:translateY(-3px);box-shadow:0 8px 30px rgba(232,0,30,.2)}
-.prog-thumb{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
-.prog-thumb img{width:100%;height:100%;object-fit:cover}
-.prog-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);font-size:2.5rem}
-.prog-live-badge{position:absolute;top:10px;left:10px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:2px;display:flex;align-items:center;gap:5px}
-.prog-info{padding:14px 16px}
-.prog-name{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
-.prog-desc{font-size:.78rem;color:var(--muted)}
-.prog-watch-btn{width:calc(100% - 32px);margin:0 16px 14px;padding:10px;background:var(--red);color:#fff;border:none;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s}
-.prog-watch-btn:hover{background:var(--red-dark)}
-.no-programs{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);gap:12px;padding:60px}
-.no-programs span{font-size:3rem}
-.no-programs p{font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:2px;text-transform:uppercase}
-
-/* PLAYER PAGE */
-.player-header{background:var(--dark);padding:16px 32px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border)}
-.back-btn{background:transparent;border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
-.back-btn:hover{border-color:var(--red);color:var(--red)}
-.player-meta h2{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-.player-meta p{font-size:.78rem;color:var(--muted)}
-#pChName{color:var(--red)}
-.player-wrapper{flex:1;display:flex;flex-direction:column;align-items:center;padding:28px 24px 36px}
-.stream-box{width:100%;max-width:960px;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--border);position:relative;aspect-ratio:16/9}
-.stream-box video{width:100%;height:100%;display:block}
-.stream-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:var(--muted);gap:12px;text-align:center;padding:20px}
-.stream-placeholder .big-icon{font-size:3rem}
-.stream-placeholder p{font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:2px;text-transform:uppercase}
-.stream-placeholder small{font-size:.72rem;color:#444}
-/* LIVE overlay badge */
-.live-overlay{position:absolute;bottom:14px;left:14px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:3px;display:none;align-items:center;gap:6px;z-index:10;pointer-events:none}
-.live-overlay.show{display:flex}
-.live-overlay .ldot{width:7px;height:7px;background:#fff;border-radius:50%;animation:pulse 1.4s infinite}
-
-/* ACCESS PAGE */
-.access-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;gap:28px}
-.access-hdr{text-align:center}
-.access-hdr h2{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;letter-spacing:4px;margin-bottom:8px}
-.access-hdr p{color:var(--muted);font-size:.95rem;max-width:440px;margin:auto}
-.plans{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
-.plan{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:28px 24px;width:220px;text-align:center;transition:border-color .2s,transform .2s;position:relative}
+.fi{font-size:1.5rem;margin-bottom:7px}
+.fl{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.fd{font-size:.78rem;color:var(--mut)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+@keyframes fup{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(232,0,30,.4)}60%{box-shadow:0 0 0 10px rgba(232,0,30,0)}}
+/* PROGRAMS */
+.ph{padding:24px 28px 0;border-bottom:1px solid var(--brd);background:var(--drk)}
+.ph h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:3px}
+.ph p{font-size:.82rem;color:var(--mut);padding-bottom:18px}
+/* sub banner */
+.subbanner{background:linear-gradient(135deg,#1a0005,#0d0d0d);border-bottom:2px solid var(--red);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.subbanner-txt h3{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;margin-bottom:2px}
+.subbanner-txt p{font-size:.75rem;color:var(--mut)}
+.prices{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pp{background:var(--crd);border:1px solid var(--brd);border-radius:4px;padding:4px 10px;text-align:center}
+.pp.hot{border-color:var(--red);background:rgba(232,0,30,.08)}
+.pp-dur{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+.pp.hot .pp-dur{color:var(--red)}
+.pp-amt{font-family:'Bebas Neue',sans-serif;font-size:1.1rem}
+.pp.hot .pp-amt{color:var(--red)}
+.btn-sub{background:var(--red);color:#fff;border:none;padding:11px 22px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap;animation:glow 2s infinite}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:24px 28px;flex:1}
+.pcard{background:var(--crd);border:1px solid var(--brd);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
+.pcard:hover{border-color:var(--red);transform:translateY(-3px);box-shadow:0 8px 28px rgba(232,0,30,.2)}
+.pthumb{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
+.pthumb img{width:100%;height:100%;object-fit:cover}
+.pthumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);font-size:2.2rem}
+.plive{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:2px;display:flex;align-items:center;gap:5px}
+.pinfo{padding:12px 14px}
+.pname{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.pdesc{font-size:.75rem;color:var(--mut)}
+.pwbtn{width:calc(100% - 28px);margin:0 14px 12px;padding:9px;background:var(--red);color:#fff;border:none;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.pwbtn:hover{background:var(--rdd)}
+.noprog{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;color:var(--mut);gap:10px}
+.noprog span{font-size:3rem}
+.noprog p{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase}
+/* sticky bottom */
+.sticky{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#0d0d0d,#1a0005,#0d0d0d);border-top:2px solid var(--red);padding:9px 20px;display:flex;align-items:center;justify-content:center;gap:12px;z-index:50;flex-wrap:wrap}
+.sticky p{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:1px;color:var(--txt);margin:0}
+.sticky p strong{color:var(--red)}
+.sticky-btn{background:var(--red);color:#fff;border:none;padding:8px 20px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.sticky-x{background:transparent;border:none;color:var(--mut);cursor:pointer;font-size:1rem;padding:4px}
+/* PLAYER */
+.plhdr{background:var(--drk);padding:14px 28px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--brd)}
+.bkbtn{background:transparent;border:1px solid var(--brd);color:var(--txt);padding:6px 13px;border-radius:4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
+.bkbtn:hover{border-color:var(--red);color:var(--red)}
+.plmeta h2{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.plmeta h2 span{color:var(--red)}
+.plmeta p{font-size:.75rem;color:var(--mut)}
+.plwrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:24px 20px 32px}
+.sbox{width:100%;max-width:960px;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--brd);position:relative;aspect-ratio:16/9}
+.sbox video{width:100%;height:100%;display:block}
+.sph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;color:var(--mut);gap:10px;text-align:center;padding:20px}
+.sph .bi{font-size:2.5rem}
+.sph p{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:2px;text-transform:uppercase}
+.sph small{font-size:.7rem;color:#444}
+.live-ov{position:absolute;bottom:12px;left:12px;background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:3px;display:none;align-items:center;gap:5px;z-index:10;pointer-events:none}
+.live-ov.show{display:flex}
+/* ACCESS */
+.accwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;gap:24px}
+.acchdr{text-align:center}
+.acchdr h2{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:4px;margin-bottom:6px}
+.acchdr p{color:var(--mut);font-size:.9rem;max-width:420px;margin:auto}
+.plans{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.plan{background:var(--crd);border:1px solid var(--brd);border-radius:8px;padding:26px 22px;width:210px;text-align:center;transition:all .2s;position:relative}
 .plan:hover{border-color:var(--red);transform:translateY(-4px)}
-.plan.featured{border-color:var(--red)}
-.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 12px;border-radius:2px;white-space:nowrap}
-.plan-name{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.plan-price{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:2px;margin-bottom:2px}
-.plan-price sup{font-size:1.1rem;vertical-align:super}
-.plan-period{font-size:.75rem;color:var(--muted);margin-bottom:18px}
-.plan-perks{list-style:none;text-align:left;margin-bottom:20px}
-.plan-perks li{font-size:.82rem;color:#bbb;padding:4px 0;display:flex;align-items:center;gap:7px}
-.plan-perks li::before{content:'✓';color:var(--red);font-weight:bold;flex-shrink:0}
-.btn-plan{width:100%;padding:11px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:block;text-align:center}
-.btn-plan.red{background:var(--red);color:#fff}
-.btn-plan.red:hover{background:var(--red-dark)}
-.btn-plan.out{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-plan.out:hover{border-color:var(--discord);color:var(--discord)}
-.payment-box{text-align:center;max-width:480px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px}
-.payment-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
-.payment-box p{font-size:.82rem;color:var(--muted);line-height:1.6}
-.payment-icons{font-size:1.3rem;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
-.paypal-badge{background:#009cde;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:1px;padding:4px 12px;border-radius:3px;text-transform:uppercase}
-.discord-box{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-.btn-discord-link{display:inline-flex;align-items:center;gap:8px;background:var(--discord);color:#fff;padding:10px 20px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:opacity .2s}
-.btn-discord-link:hover{opacity:.85}
-
+.plan.ft{border-color:var(--red)}
+.pbdg{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:3px 11px;border-radius:2px;white-space:nowrap}
+.pnm{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mut);margin-bottom:9px}
+.ppr{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:2px;margin-bottom:2px}
+.ppr sup{font-size:1rem;vertical-align:super}
+.pper{font-size:.72rem;color:var(--mut);margin-bottom:16px}
+.pperks{list-style:none;text-align:left;margin-bottom:18px}
+.pperks li{font-size:.8rem;color:#bbb;padding:4px 0;display:flex;align-items:center;gap:6px}
+.pperks li::before{content:'✓';color:var(--red);font-weight:bold;flex-shrink:0}
+.pbtn{width:100%;padding:10px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:block;text-align:center}
+.pbtn.r{background:var(--red);color:#fff}
+.pbtn.r:hover{background:var(--rdd)}
+.pbtn.o{background:transparent;border:1px solid var(--brd);color:var(--txt)}
+.pbtn.o:hover{border-color:var(--dsc);color:var(--dsc)}
+.paybox{text-align:center;max-width:460px;background:var(--crd);border:1px solid var(--brd);border-radius:8px;padding:20px}
+.paybox h3{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.paybox p{font-size:.8rem;color:var(--mut);line-height:1.6}
+.payicons{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pp-badge{background:#009cde;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:3px;text-transform:uppercase}
+.dcbox{display:flex;align-items:center;justify-content:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--brd)}
+.btn-dclink{display:inline-flex;align-items:center;gap:7px;background:var(--dsc);color:#fff;padding:9px 18px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:opacity .2s}
+.btn-dclink:hover{opacity:.85}
 /* ADMIN */
-#adminLogin{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
-.login-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:36px;width:100%;max-width:360px;text-align:center}
-.login-box h2{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:3px;margin-bottom:6px}
-.login-box p{font-size:.82rem;color:var(--muted);margin-bottom:24px}
-.f-input{width:100%;background:var(--dark);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;margin-bottom:10px}
-.f-input:focus{border-color:var(--red)}
-.btn-full{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s}
-.btn-full:hover{background:var(--red-dark)}
-#loginErr{color:var(--red);font-size:.8rem;margin-top:8px;display:none}
-
-#adminPanel{display:none;flex:1;flex-direction:column}
-.admin-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.admin-bar h3{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;flex:1}
-.admin-body{flex:1;display:flex;gap:0;overflow:hidden;min-height:0}
-
-/* Left panel */
-.a-left{width:360px;min-width:280px;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--dark);overflow-y:auto}
-.a-section{padding:16px;border-bottom:1px solid var(--border)}
-.a-section h4{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.a-input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 11px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.82rem;outline:none;transition:border-color .2s;margin-bottom:7px}
-.a-input:focus{border-color:var(--red)}
-.row{display:flex;gap:7px}
-.bs{padding:7px 12px;border-radius:4px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
-.bs.red{background:var(--red);color:#fff}
-.bs.red:hover{background:var(--red-dark)}
-.bs.ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
-.bs.ghost:hover{border-color:var(--red);color:var(--red)}
-.search-wrap{position:relative}
-.search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 11px 8px 30px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.82rem;outline:none}
-.search-wrap input:focus{border-color:var(--red)}
-.search-ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.8rem;pointer-events:none}
-#chCount{font-size:.72rem;color:var(--muted);margin-top:5px}
-.ch-list{overflow-y:auto}
-.ch-item{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:1px solid #181818;cursor:pointer;transition:background .15s}
-.ch-item:hover{background:rgba(232,0,30,.05)}
-.ch-logo{width:32px;height:32px;border-radius:3px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.62rem;color:var(--muted);flex-shrink:0;overflow:hidden}
-.ch-logo img{width:100%;height:100%;object-fit:cover}
-.ch-info{flex:1;min-width:0}
-.ch-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch-grp{font-size:.68rem;color:var(--muted)}
-.btn-add-prog{padding:4px 9px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;white-space:nowrap;flex-shrink:0}
-.btn-add-prog:hover{border-color:var(--green);color:var(--green)}
-.btn-add-prog.added{border-color:var(--green);color:var(--green);background:rgba(0,200,83,.1)}
-
-/* Right panel */
-.a-right{flex:1;display:flex;flex-direction:column;padding:18px;gap:14px;overflow-y:auto}
-.a-right h4{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-
-/* Program cards in admin */
-.prog-admin-list{display:flex;flex-direction:column;gap:10px}
-.prog-admin-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;display:flex;gap:12px;align-items:flex-start}
-.prog-admin-thumb{width:80px;height:50px;background:#000;border-radius:4px;overflow:hidden;flex-shrink:0;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.65rem;text-align:center;cursor:pointer;transition:border-color .2s;position:relative}
-.prog-admin-thumb:hover{border-color:var(--red)}
-.prog-admin-thumb img{width:100%;height:100%;object-fit:cover}
-.prog-admin-thumb .thumb-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;color:#fff}
-.prog-admin-thumb:hover .thumb-overlay{opacity:1}
-.prog-admin-info{flex:1;min-width:0}
-.prog-admin-name{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.prog-admin-url{font-size:.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px}
-.prog-admin-actions{display:flex;gap:6px;flex-wrap:wrap}
-.btn-del{padding:4px 10px;background:transparent;border:1px solid #333;color:#666;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
-.btn-del:hover{border-color:#ff4444;color:#ff4444}
-.btn-edit-name{padding:4px 10px;background:transparent;border:1px solid #333;color:#666;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
-.btn-edit-name:hover{border-color:var(--muted);color:var(--text)}
-
-/* Stats */
-.stats-row{display:flex;gap:10px}
-.stat{flex:1;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:11px;text-align:center}
-.stat-num{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:2px;color:var(--red)}
-.stat-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-
-/* Toast */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--green);color:#000;padding:11px 22px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+#aLogin{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
+.lbox{background:var(--crd);border:1px solid var(--brd);border-radius:8px;padding:34px;width:100%;max-width:340px;text-align:center}
+.lbox h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:5px}
+.lbox p{font-size:.8rem;color:var(--mut);margin-bottom:22px}
+.fi-input{width:100%;background:var(--drk);border:1px solid var(--brd);color:var(--txt);padding:10px 13px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;margin-bottom:9px}
+.fi-input:focus{border-color:var(--red)}
+.bfull{width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.92rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+.bfull:hover{background:var(--rdd)}
+#aErr{color:var(--red);font-size:.78rem;margin-top:7px;display:none}
+#aPanel{display:none;flex:1;flex-direction:column}
+.abar{background:var(--drk);border-bottom:1px solid var(--brd);padding:12px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.abar h3{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;flex:1}
+.abody{flex:1;display:flex;min-height:0}
+.aleft{width:340px;min-width:260px;border-right:1px solid var(--brd);display:flex;flex-direction:column;background:var(--drk);overflow-y:auto}
+.asec{padding:14px;border-bottom:1px solid var(--brd)}
+.asec h4{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:9px}
+.ainp{width:100%;background:var(--crd);border:1px solid var(--brd);color:var(--txt);padding:7px 10px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.8rem;outline:none;transition:border-color .2s;margin-bottom:6px}
+.ainp:focus{border-color:var(--red)}
+.row{display:flex;gap:6px}
+.bs{padding:6px 11px;border-radius:4px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;white-space:nowrap}
+.bs.r{background:var(--red);color:#fff}
+.bs.r:hover{background:var(--rdd)}
+.bs.g{background:transparent;border:1px solid var(--brd);color:var(--txt)}
+.bs.g:hover{border-color:var(--red);color:var(--red)}
+.srch{position:relative}
+.srch input{width:100%;background:var(--crd);border:1px solid var(--brd);color:var(--txt);padding:7px 10px 7px 28px;border-radius:4px;font-family:'Barlow',sans-serif;font-size:.8rem;outline:none}
+.srch input:focus{border-color:var(--red)}
+.sico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--mut);font-size:.78rem;pointer-events:none}
+.clist{overflow-y:auto;max-height:400px}
+.citem{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #181818;transition:background .15s}
+.citem:hover{background:rgba(232,0,30,.05)}
+.clogo{width:30px;height:30px;border-radius:3px;background:var(--crd);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--mut);flex-shrink:0;overflow:hidden}
+.clogo img{width:100%;height:100%;object-fit:cover}
+.cinfo{flex:1;min-width:0}
+.cname{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cgrp{font-size:.65rem;color:var(--mut)}
+.badd{padding:4px 8px;background:transparent;border:1px solid var(--brd);color:var(--mut);border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;flex-shrink:0}
+.badd:hover{border-color:var(--grn);color:var(--grn)}
+.badd.added{border-color:var(--grn);color:var(--grn);background:rgba(0,200,83,.08)}
+.aright{flex:1;display:flex;flex-direction:column;padding:16px;gap:12px;overflow-y:auto}
+.aright h4{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mut)}
+.stats{display:flex;gap:8px}
+.stat{flex:1;background:var(--crd);border:1px solid var(--brd);border-radius:6px;padding:10px;text-align:center}
+.snum{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;color:var(--red)}
+.slbl{font-size:.65rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+.proglist{display:flex;flex-direction:column;gap:9px}
+.progcard{background:var(--crd);border:1px solid var(--brd);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:flex-start}
+.pthumb-a{width:76px;height:46px;background:#000;border-radius:3px;overflow:hidden;flex-shrink:0;border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:.6rem;text-align:center;cursor:pointer;position:relative}
+.pthumb-a:hover .tov{opacity:1}
+.pthumb-a img{width:100%;height:100%;object-fit:cover}
+.tov{position:absolute;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:.65rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;color:#fff}
+.pinfo-a{flex:1;min-width:0}
+.pname-a{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.purl-a{font-size:.65rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
+.pacts{display:flex;gap:5px;flex-wrap:wrap}
+.bact{padding:3px 8px;background:transparent;border:1px solid #2a2a2a;color:#555;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
+.bact:hover{border-color:var(--mut);color:var(--txt)}
+.bact.live{border-color:var(--red);color:var(--red)}
+.bact.live:hover{background:rgba(232,0,30,.1)}
+.bact.del:hover{border-color:#f44;color:#f44}
+/* popup buttons in admin */
+.popup-btns{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--grn);color:#000;padding:10px 20px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
 .toast.err{background:var(--red);color:#fff}
-footer{text-align:center;padding:18px;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted)}
+footer{text-align:center;padding:16px;border-top:1px solid var(--brd);font-size:.72rem;color:var(--mut)}
 footer span{color:var(--red)}
-#loadInfo{font-size:.75rem;color:var(--muted);margin-top:7px}
-.empty-msg{padding:36px;text-align:center;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:2px;text-transform:uppercase}
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--blk);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+#splash::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(232,0,30,.1),transparent 70%),repeating-linear-gradient(90deg,transparent,transparent 79px,rgba(255,255,255,.02) 80px);pointer-events:none}
+.splash-inner{position:relative;z-index:1;max-width:500px;width:100%}
+.sdots{display:flex;justify-content:center;gap:7px;margin-top:24px}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--brd);transition:background .3s}
+.sdot.on{background:var(--red)}
+/* POPUP AD */
+#adPopup{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px)}
+.adbox{background:linear-gradient(135deg,#0d0d0d,#1a0005,#0d0d0d);border:2px solid var(--red);border-radius:12px;max-width:440px;width:90%;padding:34px 26px;text-align:center;position:relative;box-shadow:0 0 70px rgba(232,0,30,.2)}
+#adCloseBtn{position:absolute;top:11px;right:13px;background:rgba(255,255,255,.05);border:1px solid var(--brd);color:var(--mut);border-radius:50%;width:30px;height:30px;cursor:not-allowed;font-size:.8rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.emsg{font-size:.72rem;color:var(--mut);margin-bottom:14px}
 input[type=file]{display:none}
 </style>
 </head>
@@ -206,651 +213,420 @@ input[type=file]{display:none}
 
 <div class="toast" id="toast"></div>
 
-<!-- ============ HOME ============ -->
-<div id="page-home" class="page active">
+<!-- ===== SPLASH ===== -->
+<div id="splash">
+  <div class="splash-inner">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:5px;margin-bottom:3px">B<span style="color:var(--red)">S</span>PORT</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--mut);margin-bottom:36px">Live Streaming</div>
+    <div id="sIcon" style="font-size:2.8rem;margin-bottom:13px"></div>
+    <div id="sTitle" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;line-height:1.1;margin-bottom:9px"></div>
+    <div id="sSub" style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:28px"></div>
+    <button id="sBtn" onclick="splashAction()" style="width:100%;max-width:340px;padding:16px;color:#fff;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:11px;animation:glow 2s infinite"></button>
+    <div id="sSkipWrap">
+      <button id="sSkip" onclick="splashSkip()" disabled style="background:transparent;border:none;color:var(--mut);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:not-allowed;opacity:.4">Ignorer dans <span id="sCt">5</span>s</button>
+    </div>
+    <div class="sdots">
+      <div class="sdot" id="d1"></div>
+      <div class="sdot" id="d2"></div>
+      <div class="sdot" id="d3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== AD POPUP ===== -->
+<div id="adPopup">
+  <div class="adbox">
+    <button id="adCloseBtn" onclick="closeAd()"><span id="adCt">5</span></button>
+    <div id="adIcon" style="font-size:2.2rem;margin-bottom:12px"></div>
+    <div id="adTitle" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;line-height:1.1;margin-bottom:9px"></div>
+    <div id="adSub" style="font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:22px"></div>
+    <button id="adMainBtn" style="width:100%;padding:14px;color:#fff;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;animation:glow 2s infinite"></button>
+    <button id="adSkip" onclick="closeAd()" disabled style="width:100%;padding:9px;background:transparent;color:var(--mut);border:1px solid var(--brd);border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:not-allowed;opacity:.4">Passer dans <span id="adSkipCt">5</span>s...</button>
+  </div>
+</div>
+
+<!-- ===== HOME ===== -->
+<div id="pg-home" class="page active">
   <nav>
-    <div class="logo" onclick="go('page-home')">B<span>S</span>PORT</div>
+    <div class="logo" id="secretLogo">B<span>S</span>PORT</div>
     <div class="nav-links">
-      <button class="nb ghost" onclick="go('page-access')">Accès</button>
-      <button class="nb primary" onclick="go('page-programs')">▶ Regarder</button>
-      <button class="nb subtle" onclick="go('page-admin')">Admin</button>
+      <button class="nb g" onclick="go('pg-access')">Accès</button>
+      <button class="nb r" onclick="go('pg-programs')">▶ Regarder</button>
     </div>
   </nav>
   <div class="hero">
-    <div class="live-badge"><div class="live-dot"></div>Live maintenant</div>
-    <h1 class="hero-title">B<span class="accent">S</span>PORT</h1>
-    <p class="hero-sub">Le sport en direct, sans interruption</p>
-    <div class="hero-cta">
-      <button class="btn-watch" onclick="go('page-programs')">▶ &nbsp;Regarder en direct</button>
-      <a id="heroDiscordBtn" href="https://discord.gg/VOTRE_LIEN" target="_blank" class="btn-discord-hero">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.031.055a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+    <div class="badge"><div class="dot"></div>Live maintenant</div>
+    <h1 class="htitle">B<span class="a">S</span>PORT</h1>
+    <p class="hsub">Le sport en direct, sans interruption</p>
+    <div class="cta">
+      <button class="btn-w" onclick="go('pg-programs')">▶ &nbsp;Regarder</button>
+      <a id="herodc" href="#" target="_blank" class="btn-dc">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.031.055a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
         Discord
       </a>
     </div>
   </div>
-  <div class="features">
-    <div class="feat"><div class="feat-icon">📡</div><div class="feat-label">Full HD</div><div class="feat-desc">Stream haute qualité</div></div>
-    <div class="feat"><div class="feat-icon">⚡</div><div class="feat-label">Instantané</div><div class="feat-desc">Zéro délai</div></div>
-    <div class="feat"><div class="feat-icon">🏆</div><div class="feat-label">Multi-sports</div><div class="feat-desc">Plusieurs programmes</div></div>
-    <div class="feat"><div class="feat-icon">🌍</div><div class="feat-label">Partout</div><div class="feat-desc">Tous appareils</div></div>
+  <div class="feats">
+    <div class="feat"><div class="fi">📡</div><div class="fl">Full HD</div><div class="fd">Stream haute qualité</div></div>
+    <div class="feat"><div class="fi">⚡</div><div class="fl">Instantané</div><div class="fd">Zéro délai</div></div>
+    <div class="feat"><div class="fi">🏆</div><div class="fl">Multi-sports</div><div class="fd">Plusieurs programmes</div></div>
+    <div class="feat"><div class="fi">🌍</div><div class="fl">Partout</div><div class="fd">Tous appareils</div></div>
   </div>
   <footer>© 2025 <span>BSPORT</span> — Tous droits réservés</footer>
 </div>
 
-<!-- ============ PROGRAMS ============ -->
-<div id="page-programs" class="page">
+<!-- ===== PROGRAMS ===== -->
+<div id="pg-programs" class="page">
   <nav>
-    <div class="logo" onclick="go('page-home')">B<span>S</span>PORT</div>
+    <div class="logo" onclick="go('pg-home')">B<span>S</span>PORT</div>
     <div class="nav-links">
-      <button class="nb ghost" onclick="go('page-access')">Accès</button>
-      <button class="nb ghost" onclick="go('page-home')">Accueil</button>
+      <button class="nb g" onclick="go('pg-access')">Accès</button>
+      <button class="nb g" onclick="go('pg-home')">Accueil</button>
     </div>
   </nav>
-
-  <!-- BANNER -->
-  <div style="background:linear-gradient(135deg,#1a0005,#0d0d0d);border-bottom:2px solid var(--red);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-    <div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;margin-bottom:2px">🔥 Abonnez-vous pour un accès <span style="color:var(--red)">ILLIMITÉ</span></div>
-      <div style="font-size:.78rem;color:var(--muted)">PayPal &amp; Crypto acceptés · Activation en moins de 24h · Support Discord</div>
+  <!-- sub banner -->
+  <div class="subbanner">
+    <div class="subbanner-txt">
+      <h3>🔥 Accès <span style="color:var(--red)">ILLIMITÉ</span> à l'IPTV</h3>
+      <p>PayPal &amp; Crypto · Activation en moins de 10 minutes · Support Discord</p>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 12px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">1 mois</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem">9.99€</div></div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 12px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">3 mois</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem">17.99€</div></div>
-      <div style="background:rgba(232,0,30,.1);border:1px solid var(--red);border-radius:4px;padding:5px 12px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red)">6 mois ⭐</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--red)">29.99€</div></div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:5px 12px;text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">1 an 🏆</div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem">39.99€</div></div>
-      <button onclick="go('page-access')" style="background:var(--red);color:#fff;border:none;padding:12px 24px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap;animation:subPulse 2s infinite">S'abonner →</button>
+    <div class="prices">
+      <div class="pp"><div class="pp-dur">1 mois</div><div class="pp-amt">9.99€</div></div>
+      <div class="pp"><div class="pp-dur">3 mois</div><div class="pp-amt">17.99€</div></div>
+      <div class="pp hot"><div class="pp-dur">6 mois ⭐</div><div class="pp-amt">29.99€</div></div>
+      <div class="pp"><div class="pp-dur">1 an 🏆</div><div class="pp-amt">39.99€</div></div>
+      <button class="btn-sub" onclick="go('pg-access')">S'abonner →</button>
     </div>
   </div>
-
-  <div class="programs-page">
-    <div class="programs-header">
-      <h2>🔴 Programmes en direct</h2>
-      <p>Choisissez le programme que vous souhaitez regarder</p>
+  <!-- now live banner -->
+  <div id="nowLiveBanner" style="display:none;background:linear-gradient(135deg,#1a0005,#0d0d0d);border-bottom:1px solid var(--red);padding:12px 24px;align-items:center;gap:14px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:800;letter-spacing:2px;padding:3px 9px;border-radius:3px;display:flex;align-items:center;gap:5px;animation:glow 2s infinite"><div class="dot" style="background:#fff;width:6px;height:6px"></div>LIVE</div>
+      <div id="nowLiveName" style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase"></div>
     </div>
-    <!-- NOW LIVE FEATURED -->
-    <div id="nowLiveBanner" style="display:none;background:linear-gradient(135deg,#1a0005,#0d0d0d);border-bottom:2px solid var(--red);padding:16px 28px;display:none;align-items:center;gap:20px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:800;letter-spacing:2px;padding:4px 10px;border-radius:3px;display:flex;align-items:center;gap:5px;animation:subPulse 2s infinite">
-          <div style="width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.4s infinite"></div>LIVE MAINTENANT
-        </div>
-        <div id="nowLiveName" style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase"></div>
-      </div>
-      <button onclick="watchLive()" style="background:var(--red);color:#fff;border:none;padding:10px 24px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-left:auto">▶ Regarder maintenant</button>
-    </div>
-    <div id="programsGrid" class="programs-grid"></div>
+    <button onclick="watchLive()" style="background:var(--red);color:#fff;border:none;padding:9px 20px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-left:auto">▶ Regarder maintenant</button>
   </div>
-
-  <!-- STICKY BOTTOM -->
-  <div id="stickyCta" style="position:fixed;bottom:0;left:0;right:0;background:linear-gradient(90deg,#0d0d0d,#1a0005,#0d0d0d);border-top:2px solid var(--red);padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:14px;z-index:50;flex-wrap:wrap">
-    <p style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:1px;color:var(--text);margin:0">💳 Accès illimité à partir de <strong style="color:var(--red)">9.99€/mois</strong> — PayPal &amp; Crypto acceptés</p>
-    <button onclick="go('page-access')" style="background:var(--red);color:#fff;border:none;padding:9px 22px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap">S'abonner maintenant</button>
-    <button onclick="document.getElementById('stickyCta').style.display='none'" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px 8px">✕</button>
+  <div class="ph">
+    <h2>🔴 Programmes en direct</h2>
+    <p>Choisissez le programme que vous souhaitez regarder</p>
   </div>
-
-  <footer style="padding-bottom:60px">© 2025 <span>BSPORT</span> — Tous droits réservés</footer>
+  <div id="pgrid" class="pgrid"></div>
+  <!-- sticky bottom -->
+  <div id="stky" class="sticky">
+    <p>💳 Accès illimité à partir de <strong>9.99€/mois</strong> — PayPal &amp; Crypto</p>
+    <button class="sticky-btn" onclick="go('pg-access')">S'abonner</button>
+    <button class="sticky-x" onclick="document.getElementById('stky').style.display='none'">✕</button>
+  </div>
+  <footer style="padding-bottom:55px">© 2025 <span>BSPORT</span> — Tous droits réservés</footer>
 </div>
 
-<!-- ============ PLAYER ============ -->
-<div id="page-player" class="page">
+<!-- ===== PLAYER ===== -->
+<div id="pg-player" class="page">
   <nav>
-    <div class="logo" onclick="go('page-home')">B<span>S</span>PORT</div>
+    <div class="logo" onclick="go('pg-home')">B<span>S</span>PORT</div>
     <div class="nav-links">
-      <button class="nb ghost" onclick="go('page-programs')">← Programmes</button>
+      <button class="nb g" onclick="go('pg-programs')">← Programmes</button>
     </div>
   </nav>
-  <div class="player-header">
-    <button class="back-btn" onclick="go('page-programs')">← Retour</button>
-    <div class="player-meta">
-      <h2>🔴 <span id="pChName">En direct</span></h2>
-      <p id="pStatus">Connexion au flux...</p>
+  <div class="plhdr">
+    <button class="bkbtn" onclick="go('pg-programs')">← Retour</button>
+    <div class="plmeta">
+      <h2>🔴 <span id="plName">En direct</span></h2>
+      <p id="plStatus">Connexion...</p>
     </div>
   </div>
-  <div class="player-wrapper">
-    <div class="stream-box">
-      <div class="stream-placeholder" id="playerPH">
-        <div class="big-icon">📡</div>
-        <p>Chargement...</p>
-        <small>La chaîne démarre automatiquement</small>
-      </div>
-      <video id="mainVideo" controls style="display:none;width:100%;height:100%;"></video>
-      <div class="live-overlay" id="liveOverlay"><div class="ldot"></div>LIVE</div>
+  <div class="plwrap">
+    <div class="sbox">
+      <div class="sph" id="sph"><div class="bi">📡</div><p>Chargement...</p><small>Démarrage automatique</small></div>
+      <video id="vid" controls style="display:none;width:100%;height:100%"></video>
+      <div class="live-ov" id="liveOv"><div class="dot" style="background:#fff;width:6px;height:6px"></div>LIVE</div>
     </div>
   </div>
   <footer>© 2025 <span>BSPORT</span> — Tous droits réservés</footer>
 </div>
 
-<!-- ============ ACCESS ============ -->
-<div id="page-access" class="page">
+<!-- ===== ACCESS ===== -->
+<div id="pg-access" class="page">
   <nav>
-    <div class="logo" onclick="go('page-home')">B<span>S</span>PORT</div>
+    <div class="logo" onclick="go('pg-home')">B<span>S</span>PORT</div>
     <div class="nav-links">
-      <button class="nb ghost" onclick="go('page-home')">Accueil</button>
-      <button class="nb primary" onclick="go('page-programs')">▶ Regarder</button>
+      <button class="nb g" onclick="go('pg-home')">Accueil</button>
+      <button class="nb r" onclick="go('pg-programs')">▶ Regarder</button>
     </div>
   </nav>
-  <div class="access-wrap">
-    <div class="access-hdr">
+  <div class="accwrap">
+    <div class="acchdr">
       <h2>Choisissez votre accès</h2>
-      <p>Paiement PayPal ou crypto accepté. Contactez-nous sur Discord après votre paiement pour activer votre accès.</p>
+      <p>Paiement PayPal ou crypto. Contactez-nous sur Discord, activation en moins de 10 minutes.</p>
     </div>
     <div class="plans">
-      <div class="plan">
-        <div class="plan-name">1 Mois</div>
-        <div class="plan-price"><sup>€</sup>9<span style="font-size:1.4rem">.99</span></div>
-        <div class="plan-period">accès 30 jours</div>
-        <ul class="plan-perks"><li>Tous les programmes</li><li>Full HD</li><li>Support Discord</li></ul>
-        <a id="discordBtn1" href="https://discord.gg/VOTRE_LIEN" target="_blank" class="btn-plan out">Contacter Discord</a>
-      </div>
-      <div class="plan">
-        <div class="plan-name">3 Mois</div>
-        <div class="plan-price"><sup>€</sup>17<span style="font-size:1.4rem">.99</span></div>
-        <div class="plan-period">accès 90 jours</div>
-        <ul class="plan-perks"><li>Tous les programmes</li><li>Full HD</li><li>Support Discord</li></ul>
-        <a id="discordBtn2" href="https://discord.gg/VOTRE_LIEN" target="_blank" class="btn-plan out">Contacter Discord</a>
-      </div>
-      <div class="plan featured">
-        <div class="plan-badge">⭐ Populaire</div>
-        <div class="plan-name">6 Mois</div>
-        <div class="plan-price"><sup>€</sup>29<span style="font-size:1.4rem">.99</span></div>
-        <div class="plan-period">accès 180 jours</div>
-        <ul class="plan-perks"><li>Tous les programmes</li><li>Full HD</li><li>Support prioritaire</li><li>Économisez 25%</li></ul>
-        <a id="discordBtn3" href="https://discord.gg/VOTRE_LIEN" target="_blank" class="btn-plan red">Contacter Discord</a>
-      </div>
-      <div class="plan">
-        <div class="plan-badge" style="background:#f0a500;color:#000">🏆 Meilleur prix</div>
-        <div class="plan-name" style="margin-top:12px">1 An</div>
-        <div class="plan-price"><sup>€</sup>39<span style="font-size:1.4rem">.99</span></div>
-        <div class="plan-period">accès 365 jours</div>
-        <ul class="plan-perks"><li>Tous les programmes</li><li>Full HD</li><li>Support VIP</li><li>Économisez 67%</li></ul>
-        <a id="discordBtn4" href="https://discord.gg/VOTRE_LIEN" target="_blank" class="btn-plan out">Contacter Discord</a>
-      </div>
+      <div class="plan"><div class="pnm">1 Mois</div><div class="ppr"><sup>€</sup>9<span style="font-size:1.2rem">.99</span></div><div class="pper">30 jours</div><ul class="pperks"><li>Tous les programmes</li><li>Full HD</li><li>Support Discord</li></ul><a id="dc1" href="#" target="_blank" class="pbtn o">Discord</a></div>
+      <div class="plan"><div class="pnm">3 Mois</div><div class="ppr"><sup>€</sup>17<span style="font-size:1.2rem">.99</span></div><div class="pper">90 jours</div><ul class="pperks"><li>Tous les programmes</li><li>Full HD</li><li>Support Discord</li></ul><a id="dc2" href="#" target="_blank" class="pbtn o">Discord</a></div>
+      <div class="plan ft"><div class="pbdg">⭐ Populaire</div><div class="pnm">6 Mois</div><div class="ppr"><sup>€</sup>29<span style="font-size:1.2rem">.99</span></div><div class="pper">180 jours</div><ul class="pperks"><li>Tous les programmes</li><li>Full HD</li><li>Support prioritaire</li><li>Économisez 25%</li></ul><a id="dc3" href="#" target="_blank" class="pbtn r">Discord</a></div>
+      <div class="plan"><div class="pbdg" style="background:#f0a500;color:#000">🏆 Meilleur</div><div class="pnm" style="margin-top:10px">1 An</div><div class="ppr"><sup>€</sup>39<span style="font-size:1.2rem">.99</span></div><div class="pper">365 jours</div><ul class="pperks"><li>Tous les programmes</li><li>Full HD</li><li>Support VIP</li><li>Économisez 67%</li></ul><a id="dc4" href="#" target="_blank" class="pbtn o">Discord</a></div>
     </div>
-    <div class="payment-box">
-      <div class="payment-icons">
-        <span class="paypal-badge">💳 PayPal accepté</span>
-        <span>₿</span><span>Ξ</span><span>💎 Crypto</span>
-      </div>
+    <div class="paybox">
+      <div class="payicons"><span class="pp-badge">💳 PayPal accepté</span><span>₿</span><span>Ξ</span><span>💎</span></div>
       <h3>Comment payer ?</h3>
-      <p>Rejoignez notre Discord, ouvrez un ticket et indiquez la durée souhaitée. Nous vous enverrons les instructions de paiement et activerons votre accès en moins de 24h.</p>
-      <div class="discord-box">
-        <a id="discordBtnMain" href="https://discord.gg/VOTRE_LIEN" target="_blank" class="btn-discord-link">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.031.055a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-          Rejoindre notre Discord
-        </a>
-      </div>
+      <p>Rejoignez notre Discord, ouvrez un ticket et indiquez la durée souhaitée. Activation en moins de 10 minutes.</p>
+      <div class="dcbox"><a id="dcmain" href="#" target="_blank" class="btn-dclink"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.031.055a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>Rejoindre Discord</a></div>
     </div>
   </div>
   <footer>© 2025 <span>BSPORT</span> — Tous droits réservés</footer>
 </div>
 
-<!-- ============ ADMIN ============ -->
-<div id="page-admin" class="page">
+<!-- ===== ADMIN ===== -->
+<div id="pg-admin" class="page">
   <nav>
-    <div class="logo" onclick="go('page-home')">B<span>S</span>PORT <span style="font-size:.8rem;color:var(--muted);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px">ADMIN</span></div>
+    <div class="logo" onclick="go('pg-home')">B<span>S</span>PORT <span style="font-size:.75rem;color:var(--mut);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px">ADMIN</span></div>
     <div class="nav-links">
-      <button class="nb ghost" onclick="go('page-home')">← Site</button>
-      <button class="nb subtle" id="logoutBtn" style="display:none" onclick="logout()">Déconnexion</button>
+      <button class="nb g" onclick="go('pg-home')">← Site</button>
+      <button class="nb g" id="logoutBtn" style="display:none" onclick="logout()">Déconnexion</button>
     </div>
   </nav>
-
-  <div id="adminLogin">
-    <div class="login-box">
+  <div id="aLogin">
+    <div class="lbox">
       <h2>🔐 Admin</h2>
       <p>Accès réservé à l'administrateur</p>
-      <input class="f-input" type="password" id="adminPass" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()"/>
-      <button class="btn-full" onclick="doLogin()">Se connecter</button>
-      <div id="loginErr">Mot de passe incorrect</div>
+      <input class="fi-input" type="password" id="aPass" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="bfull" onclick="doLogin()">Se connecter</button>
+      <div id="aErr">Mot de passe incorrect</div>
     </div>
   </div>
-
-  <div id="adminPanel">
-    <div class="admin-bar">
-      <h3>🎛 Gestion des programmes</h3>
-      <button class="bs ghost" onclick="go('page-programs')">👁 Voir programmes</button>
-      <button id="popupToggleBtn" class="bs ghost" onclick="togglePopup()">⛔ Popup OFF — Activer</button>
-      <button class="bs ghost" onclick="showAd()">🎯 Tester popup</button>
-      <button class="bs ghost" onclick="go('page-player')">📺 Voir lecteur</button>
-      <!-- Discord config -->
-      <div style="display:flex;gap:6px;align-items:center;margin-left:auto">
-        <input class="a-input" id="gistIdInput" type="text" placeholder="Gist ID" style="margin:0;width:140px"/>
-        <input class="a-input" id="gistTokenInput" type="password" placeholder="GitHub Token" style="margin:0;width:150px"/>
-        <input class="a-input" id="telegramInput" type="text" placeholder="Lien Telegram..." style="margin:0;width:160px"/>
-        <input class="a-input" id="discordInput" type="text" placeholder="Lien Discord..." style="margin:0;width:160px"/>
-        <button class="bs red" onclick="saveLinks()">💾 Sauver liens</button>
-        <button class="bs ghost" onclick="resetVisits()" title="Remet le compteur de visites à 0 (reteste le splash)">🔄 Reset splash</button>
+  <div id="aPanel">
+    <div class="abar">
+      <h3>🎛 Panneau admin</h3>
+      <button class="bs g" onclick="go('pg-programs')">👁 Programmes</button>
+      <!-- Popup controls -->
+      <div style="display:flex;gap:5px;align-items:center">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--mut)">Popup:</span>
+        <button class="bs g" style="border-color:#5865F2;color:#5865F2" onclick="triggerAd('discord')">💬 Discord</button>
+        <button class="bs g" style="border-color:var(--tg);color:var(--tg)" onclick="triggerAd('telegram')">📲 Telegram</button>
+        <button class="bs g" style="border-color:var(--red);color:var(--red)" onclick="triggerAd('abo')">🔥 Abo</button>
+        <button class="bs g" id="popOffBtn" onclick="stopAd()">⛔ Stop</button>
+      </div>
+      <!-- Config -->
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+        <input class="ainp" id="cfgGistId" type="text" placeholder="Gist ID" style="margin:0;width:130px"/>
+        <input class="ainp" id="cfgToken" type="password" placeholder="GitHub Token" style="margin:0;width:140px"/>
+        <input class="ainp" id="cfgTg" type="text" placeholder="Lien Telegram" style="margin:0;width:150px"/>
+        <input class="ainp" id="cfgDc" type="text" placeholder="Lien Discord" style="margin:0;width:150px"/>
+        <button class="bs r" onclick="saveConfig()">💾 Sauver</button>
+        <button class="bs g" onclick="resetVisits()">🔄 Reset splash</button>
       </div>
     </div>
-    <div class="admin-body">
-
-      <!-- LEFT: M3U loader + channel list -->
-      <div class="a-left">
-        <div class="a-section">
-          <h4>🔌 Connexion Xtream Codes</h4>
-          <input class="a-input" id="xtServer" type="text" placeholder="http://mgdata.online:2052"/>
-          <input class="a-input" id="xtUser" type="text" placeholder="Username"/>
-          <input class="a-input" id="xtPass" type="text" placeholder="Password"/>
-          <button class="bs red" onclick="loadXtream()" style="width:100%;margin-bottom:10px">🔌 Charger les chaînes</button>
-          <div style="border-top:1px solid var(--border);padding-top:10px">
-            <h4 style="margin-bottom:8px">Ou fichier .m3u :</h4>
-            <button class="bs ghost" onclick="document.getElementById('m3uFile').click()" style="width:100%">📁 Charger fichier</button>
-            <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt" onchange="loadFromFile(this)"/>
+    <div class="abody">
+      <!-- LEFT -->
+      <div class="aleft">
+        <div class="asec">
+          <h4>🔌 Xtream Codes</h4>
+          <input class="ainp" id="xtSrv" type="text" placeholder="http://serveur:port"/>
+          <input class="ainp" id="xtUsr" type="text" placeholder="Username"/>
+          <input class="ainp" id="xtPwd" type="text" placeholder="Password"/>
+          <button class="bs r" onclick="loadXtream()" style="width:100%;margin-bottom:9px">🔌 Charger chaînes</button>
+          <div style="border-top:1px solid var(--brd);padding-top:9px">
+            <h4 style="margin-bottom:7px">Ou fichier .m3u</h4>
+            <button class="bs g" onclick="document.getElementById('m3uFile').click()" style="width:100%">📁 Charger fichier</button>
+            <input type="file" id="m3uFile" accept=".m3u,.m3u8,.txt" onchange="loadFile(this)"/>
           </div>
-          <div id="loadInfo"></div>
+          <div id="ldInfo" style="font-size:.72rem;color:var(--mut);margin-top:7px"></div>
         </div>
-        <div class="a-section" style="border-bottom:none">
-          <h4>🔍 Chercher une chaîne</h4>
-          <div class="search-wrap">
-            <span class="search-ico">⌕</span>
-            <input type="text" id="chSearch" placeholder="Nom ou groupe..." oninput="filterCh(this.value)"/>
+        <div class="asec" style="border-bottom:none">
+          <h4>🔍 Rechercher</h4>
+          <div class="srch">
+            <span class="sico">⌕</span>
+            <input type="text" id="chSrch" placeholder="Nom ou groupe..." oninput="filterCh(this.value)"/>
           </div>
-          <div id="chCount"></div>
+          <div id="chCt" style="font-size:.7rem;color:var(--mut);margin-top:5px"></div>
         </div>
-        <div class="ch-list" id="chList"><div class="empty-msg">Chargez votre playlist M3U</div></div>
+        <div class="clist" id="clist"><div style="padding:30px;text-align:center;color:var(--mut);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase">Chargez votre playlist</div></div>
       </div>
-
-      <!-- RIGHT: programs manager -->
-      <div class="a-right">
-        <div>
-          <h4>📺 Programmes diffusés sur le site (<span id="progCount">0</span>)</h4>
-          <p style="font-size:.75rem;color:var(--muted);margin-bottom:12px">Cliquez sur "+" à côté d'une chaîne pour l'ajouter. Cliquez sur la miniature pour changer l'image.</p>
+      <!-- RIGHT -->
+      <div class="aright">
+        <h4>📺 Programmes en diffusion (<span id="progCt">0</span>)</h4>
+        <p style="font-size:.72rem;color:var(--mut)">Cliquez "+" sur une chaîne pour l'ajouter. Cliquez la miniature pour changer l'image. Cliquez 🔴 pour la mettre en live.</p>
+        <div class="stats">
+          <div class="stat"><div class="snum" id="stCh">0</div><div class="slbl">Chaînes</div></div>
+          <div class="stat"><div class="snum" id="stGr">0</div><div class="slbl">Groupes</div></div>
+          <div class="stat"><div class="snum" id="stPr">0</div><div class="slbl">Programmes</div></div>
         </div>
-        <div class="stats-row">
-          <div class="stat"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">Chaînes chargées</div></div>
-          <div class="stat"><div class="stat-num" id="stGroups">0</div><div class="stat-lbl">Groupes</div></div>
-          <div class="stat"><div class="stat-num" id="stProgs">0</div><div class="stat-lbl">En diffusion</div></div>
-        </div>
-        <div id="progAdminList" class="prog-admin-list"><div class="empty-msg">Aucun programme ajouté</div></div>
+        <div id="progList" class="proglist"><div style="padding:30px;text-align:center;color:var(--mut);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase">Aucun programme ajouté</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Hidden file inputs -->
-<input type="file" id="thumbFileInput" accept="image/*" onchange="handleThumbUpload(this)"/>
+<input type="file" id="thumbFile" accept="image/*" onchange="handleThumb(this)"/>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
 <script>
-const PASS = "bsport2025"; // ← Changez ce mot de passe !
-const DISCORD_DEFAULT = "https://discord.gg/VOTRE_LIEN";
+// ── CONFIG ──
+const ADMIN_PASS = "bsport2025"; // changez ici
 
-let allCh = [], filtCh = [], hlsMain = null;
-let programs = []; // [{name, url, thumb, desc}]
-let currentProgIdx = -1;
-let editingThumbIdx = -1;
+// ── STATE ──
+let allCh = [], filtCh = [], progs = [], hlsI = null, editThumbIdx = -1, logoClicks = 0, logoTimer = null, adTimer = null, splashTimer = null;
 
-// ─── POPUP AD ───
-let adTimer = null;
-function togglePopup() {
-  const current = localStorage.getItem('bsport:popup') || 'off';
-  const next = current === 'on' ? 'off' : 'on';
-  localStorage.setItem('bsport:popup', next);
-  updatePopupBtn();
-  toast(next === 'on' ? '✅ Popup activée ! Elle apparaîtra au prochain visiteur' : '⛔ Popup désactivée');
-}
-function updatePopupBtn() {
-  const btn = document.getElementById('popupToggleBtn');
-  if (!btn) return;
-  const on = localStorage.getItem('bsport:popup') === 'on';
-  btn.textContent = on ? '🟢 Popup ON — Désactiver' : '⛔ Popup OFF — Activer';
-  btn.style.borderColor = on ? 'var(--green)' : 'var(--border)';
-  btn.style.color = on ? 'var(--green)' : 'var(--muted)';
-}
+// ── HELPERS ──
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
 
-function showAd() {
-  const popup = document.getElementById('adPopup');
-  popup.style.display = 'flex';
-  let count = 5;
-  document.getElementById('adCountdown').textContent = count;
-  document.getElementById('adSkipCount').textContent = count;
-  adTimer = setInterval(() => {
-    count--;
-    document.getElementById('adCountdown').textContent = count;
-    document.getElementById('adSkipCount').textContent = count;
-    if (count <= 0) {
-      clearInterval(adTimer);
-      const btn = document.getElementById('adCloseBtn');
-      const skip = document.getElementById('adSkipBtn');
-      btn.disabled = false;
-      btn.style.cursor = 'pointer';
-      btn.style.borderColor = 'var(--red)';
-      btn.style.color = '#fff';
-      btn.style.background = 'var(--red)';
-      btn.innerHTML = '✕';
-      skip.disabled = false;
-      skip.style.cursor = 'pointer';
-      skip.style.opacity = '1';
-      skip.innerHTML = 'Continuer vers le site';
-    }
-  }, 1000);
-}
-function closeAd() {
-  clearInterval(adTimer);
-  document.getElementById('adPopup').style.display = 'none';
-}
-
-// ─── SPLASH SCREEN ───
-function getTelegramLink() { return localStorage.getItem('bsport:telegram') || 'https://t.me/VOTRE_LIEN'; }
-let splashTimer = null;
-
-function initSplash() {
-  const visit = parseInt(localStorage.getItem('bsport:visits') || '0') + 1;
-  localStorage.setItem('bsport:visits', visit);
-
-  const splash = document.getElementById('splashScreen');
-  splash.style.display = 'flex';
-
-  // Update dots
-  for (let i = 1; i <= 3; i++) {
-    document.getElementById('dot' + i).style.background = i <= visit ? 'var(--red)' : 'var(--border)';
-  }
-
-  if (visit === 1) {
-    // First visit → Telegram
-    document.getElementById('splashIcon').textContent = '📲';
-    document.getElementById('splashTitle').innerHTML = 'Rejoignez notre<br><span style="color:var(--red)">Telegram</span>';
-    document.getElementById('splashSub').textContent = 'Toutes nos offres et actualités';
-    document.getElementById('splashBtn').textContent = '➤ Rejoindre le Telegram';
-  } else if (visit === 2) {
-    // Second visit → Discord
-    document.getElementById('splashIcon').textContent = '🎮';
-    document.getElementById('splashTitle').innerHTML = 'Rejoignez notre<br><span style="color:#5865F2">Discord</span>';
-    document.getElementById('splashSub').textContent = 'Support, offres exclusives & plus';
-    document.getElementById('splashBtn').textContent = '➤ Rejoindre le Discord';
-    document.getElementById('splashBtn').style.background = '#5865F2';
-  } else {
-    // 3rd+ visit → Enter site
-    document.getElementById('splashIcon').textContent = '🔴';
-    document.getElementById('splashTitle').innerHTML = 'Bienvenue sur<br><span style="color:var(--red)">BSPORT</span>';
-    document.getElementById('splashSub').textContent = 'Live · Films · Séries · Sport';
-    document.getElementById('splashBtn').textContent = '▶ Accéder au site';
-    document.getElementById('splashBtn').style.background = 'var(--red)';
-    document.getElementById('splashSkipWrap').style.display = 'none';
-    enterSite(); return; // Auto enter after 3rd visit
-  }
-
-  // Countdown to enable skip
-  let count = 5;
-  splashTimer = setInterval(() => {
-    count--;
-    const el = document.getElementById('splashCount');
-    if (el) el.textContent = count;
-    if (count <= 0) {
-      clearInterval(splashTimer);
-      const skip = document.getElementById('splashSkip');
-      if (skip) {
-        skip.disabled = false;
-        skip.style.cursor = 'pointer';
-        skip.style.opacity = '1';
-        skip.innerHTML = 'Ignorer et continuer →';
-      }
-    }
-  }, 1000);
-}
-
-function splashAction() {
-  const visit = parseInt(localStorage.getItem('bsport:visits') || '1');
-  clearInterval(splashTimer);
-  if (visit === 1) {
-    window.open(getTelegramLink(), '_blank');
-    enterSite();
-  } else if (visit === 2) {
-    window.open(getDiscordLS(), '_blank');
-    enterSite();
-  } else {
-    enterSite();
-  }
-}
-
-function skipSplash() {
-  clearInterval(splashTimer);
-  enterSite();
-}
-
-function enterSite() {
-  const splash = document.getElementById('splashScreen');
-  splash.style.opacity = '0';
-  splash.style.transition = 'opacity .4s';
-  setTimeout(() => { splash.style.display = 'none'; }, 400);
-}
-
-// ─── NAV ───
-function go(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+// ── NAVIGATION ──
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-  if (id === 'page-programs') renderPublicPrograms();
-  if (id === 'page-admin') { refreshDiscordLinks(); loadPrograms(); refreshProgAdminList(); }
+  window.scrollTo(0,0);
+  if(id==='pg-programs'){loadPublic();showLiveBanner()}
+  if(id==='pg-admin'){loadConfig();loadProgs();renderProgList()}
 }
 
-// ─── TOAST ───
-function toast(msg, err=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (err?' err':'');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
+// ── SECRET ADMIN (5 clics sur le logo) ──
+document.getElementById('secretLogo').addEventListener('click',()=>{
+  go('pg-home');
+  logoClicks++;
+  clearTimeout(logoTimer);
+  logoTimer=setTimeout(()=>{logoClicks=0},2000);
+  if(logoClicks>=5){logoClicks=0;go('pg-admin')}
+});
 
-// ─── STORAGE ───
-// ─── GITHUB GIST BACKEND ───
-// ─── LIVE CHANNEL (shared via Gist) ───
-async function setLiveChannel(name, url, thumb) {
-  const ch = { name, url, thumb: thumb || '' };
-  localStorage.setItem('bsport:liveChannel', JSON.stringify(ch));
-  await savePrograms(); // saves everything to Gist including liveChannel
-}
+// ── STORAGE ──
+function getGist(){return{id:localStorage.getItem('bs:gistId')||'',tok:localStorage.getItem('bs:gistTok')||''}}
+function getDc(){return localStorage.getItem('bs:discord')||'#'}
+function getTg(){return localStorage.getItem('bs:telegram')||'#'}
 
-function getLiveChannel() {
-  try {
-    const d = localStorage.getItem('bsport:liveChannel');
-    return d ? JSON.parse(d) : null;
-  } catch(e) { return null; }
-}
-
-function getGistConfig() {
-  return {
-    token: localStorage.getItem('bsport:gistToken') || '',
-    id:    localStorage.getItem('bsport:gistId')    || ''
-  };
-}
-
-async function savePrograms() {
-  localStorage.setItem('bsport:programs', JSON.stringify(programs));
-  updateProgStats();
-  const { token, id } = getGistConfig();
-  if (!token || !id) return;
-  try {
-    await fetch(`https://api.github.com/gists/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        files: {
-          'bsport-data.json': {
-            content: JSON.stringify({
-              programs,
-              liveChannel: JSON.parse(localStorage.getItem('bsport:liveChannel') || 'null'),
-              discord: getDiscordLS(),
-              telegram: localStorage.getItem('bsport:telegram') || ''
-            })
-          }
-        }
-      })
+async function gistSave(data){
+  const{id,tok}=getGist();
+  if(!id||!tok)return false;
+  try{
+    await fetch(`https://api.github.com/gists/${id}`,{
+      method:'PATCH',
+      headers:{'Authorization':'token '+tok,'Content-Type':'application/json'},
+      body:JSON.stringify({files:{'bsport-data.json':{content:JSON.stringify(data)}}})
     });
-    toast('✅ Synchronisé avec GitHub !');
-  } catch(e) { console.warn('Gist save error', e); }
+    return true;
+  }catch(e){return false}
 }
 
-async function loadPrograms() {
-  const { token, id } = getGistConfig();
-  if (token && id) {
-    try {
-      const r = await fetch(`https://api.github.com/gists/${id}`, {
-        headers: { 'Authorization': `token ${token}` }
-      });
-      const data = await r.json();
-      const file = data.files && data.files['bsport-data.json'];
-      if (file && file.content) {
-        const parsed = JSON.parse(file.content);
-        if (parsed.programs) {
-          programs = parsed.programs;
-          localStorage.setItem('bsport:programs', JSON.stringify(programs));
-        }
-        if (parsed.discord) saveDiscordLS(parsed.discord);
-        if (parsed.telegram) localStorage.setItem('bsport:telegram', parsed.telegram);
-        updateProgStats();
-        return;
-      }
-    } catch(e) { console.warn('Gist load error', e); }
-  }
-  // Fallback localStorage
-  try {
-    const d = localStorage.getItem('bsport:programs');
-    if (d) programs = JSON.parse(d);
-  } catch(e) { programs = []; }
-  updateProgStats();
+async function gistLoad(){
+  const{id}=getGist();
+  if(!id)return null;
+  try{
+    const r=await fetch(`https://api.github.com/gists/${id}`);
+    const d=await r.json();
+    const f=d.files&&d.files['bsport-data.json'];
+    if(f&&f.content)return JSON.parse(f.content);
+  }catch(e){}
+  return null;
 }
 
-// Called by visitors (public read, no token needed)
-async function loadProgramsPublic() {
-  const id = localStorage.getItem('bsport:gistId') || '';
-  if (id) {
-    try {
-      const r = await fetch(`https://api.github.com/gists/${id}`);
-      const data = await r.json();
-      const file = data.files && data.files['bsport-data.json'];
-      if (file && file.content) {
-        const parsed = JSON.parse(file.content);
-        if (parsed.programs) programs = parsed.programs;
-        if (parsed.discord) saveDiscordLS(parsed.discord);
-        if (parsed.telegram) localStorage.setItem('bsport:telegram', parsed.telegram);
-        if (parsed.liveChannel) localStorage.setItem('bsport:liveChannel', JSON.stringify(parsed.liveChannel));
-        updateProgStats();
-        renderGrid();
-        return;
-      }
-    } catch(e) {}
+async function saveAll(){
+  const data={progs,discord:getDc(),telegram:getTg(),liveChannel:JSON.parse(localStorage.getItem('bs:live')||'null')};
+  localStorage.setItem('bs:progs',JSON.stringify(progs));
+  const ok=await gistSave(data);
+  if(ok)toast('✅ Synchronisé !');
+}
+
+function loadProgs(){
+  try{const d=localStorage.getItem('bs:progs');if(d)progs=JSON.parse(d)}catch(e){progs=[]}
+  updateStats();
+}
+
+async function loadPublic(){
+  const remote=await gistLoad();
+  if(remote){
+    if(remote.progs)progs=remote.progs;
+    if(remote.discord)localStorage.setItem('bs:discord',remote.discord);
+    if(remote.telegram)localStorage.setItem('bs:telegram',remote.telegram);
+    if(remote.liveChannel)localStorage.setItem('bs:live',JSON.stringify(remote.liveChannel));
+  }else{
+    try{const d=localStorage.getItem('bs:progs');if(d)progs=JSON.parse(d)}catch(e){progs=[]}
   }
-  // Fallback
-  try {
-    const d = localStorage.getItem('bsport:programs');
-    if (d) programs = JSON.parse(d);
-  } catch(e) { programs = []; }
-  updateProgStats();
   renderGrid();
+  updateDiscordLinks();
 }
 
-function updateProgStats() {
-  const el1 = document.getElementById('stProgs');
-  const el2 = document.getElementById('progCount');
-  if (el1) el1.textContent = programs.length;
-  if (el2) el2.textContent = programs.length;
-}
-
-function saveDiscordLS(url) { localStorage.setItem('bsport:discord', url); }
-function getDiscordLS() { return localStorage.getItem('bsport:discord') || DISCORD_DEFAULT; }
-
-function saveLinks() {
-  const discord  = document.getElementById('discordInput').value.trim();
-  const telegram = document.getElementById('telegramInput').value.trim();
-  const gistId   = document.getElementById('gistIdInput') ? document.getElementById('gistIdInput').value.trim() : '';
-  const gistTok  = document.getElementById('gistTokenInput') ? document.getElementById('gistTokenInput').value.trim() : '';
-  if (discord)  saveDiscordLS(discord);
-  if (telegram) localStorage.setItem('bsport:telegram', telegram);
-  if (gistId)   localStorage.setItem('bsport:gistId', gistId);
-  if (gistTok)  localStorage.setItem('bsport:gistToken', gistTok);
-  refreshDiscordLinks();
+// ── CONFIG ──
+function saveConfig(){
+  const gId=document.getElementById('cfgGistId').value.trim();
+  const gTok=document.getElementById('cfgToken').value.trim();
+  const tg=document.getElementById('cfgTg').value.trim();
+  const dc=document.getElementById('cfgDc').value.trim();
+  if(gId)localStorage.setItem('bs:gistId',gId);
+  if(gTok&&!gTok.includes('•'))localStorage.setItem('bs:gistTok',gTok);
+  if(tg)localStorage.setItem('bs:telegram',tg);
+  if(dc)localStorage.setItem('bs:discord',dc);
+  updateDiscordLinks();
   toast('Configuration sauvegardée !');
 }
 
-function saveDiscord() { saveLinks(); } // keep compat
-
-function resetVisits() {
-  localStorage.removeItem('bsport:visits');
-  toast('Compteur reset ! Le prochain visiteur verra le splash depuis le début.');
+function loadConfig(){
+  document.getElementById('cfgGistId').value=localStorage.getItem('bs:gistId')||'';
+  document.getElementById('cfgToken').value=localStorage.getItem('bs:gistTok')?'••••••••••':'';
+  document.getElementById('cfgTg').value=localStorage.getItem('bs:telegram')||'';
+  document.getElementById('cfgDc').value=localStorage.getItem('bs:discord')||'';
 }
 
-function refreshDiscordLinks() {
-  const url = getDiscordLS();
-  document.getElementById('discordInput').value = url;
-  const tgInput = document.getElementById('telegramInput');
-  if (tgInput) tgInput.value = localStorage.getItem('bsport:telegram') || '';
-  const gistId = document.getElementById('gistIdInput');
-  if (gistId) gistId.value = localStorage.getItem('bsport:gistId') || '';
-  const gistTok = document.getElementById('gistTokenInput');
-  if (gistTok) gistTok.value = localStorage.getItem('bsport:gistToken') ? '••••••••' : '';
-  // Update all discord buttons
-  ['heroDiscordBtn','discordBtn1','discordBtn2','discordBtn3','discordBtn4','discordBtnMain'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.href = url;
-  });
+function updateDiscordLinks(){
+  const dc=getDc(),tg=getTg();
+  ['herodc','dc1','dc2','dc3','dc4','dcmain'].forEach(id=>{const el=document.getElementById(id);if(el)el.href=dc});
 }
 
-// ─── LOGIN ───
-function doLogin() {
-  if (document.getElementById('adminPass').value === PASS) {
-    document.getElementById('adminLogin').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'flex';
-    document.getElementById('logoutBtn').style.display = 'block';
-    document.getElementById('adminPass').value = '';
-    document.getElementById('loginErr').style.display = 'none';
-    refreshDiscordLinks();
-    loadPrograms();
-    refreshProgAdminList();
-    updatePopupBtn();
-  } else {
-    document.getElementById('loginErr').style.display = 'block';
-  }
+function resetVisits(){localStorage.removeItem('bs:visits');toast('Splash remis à zéro !')}
+
+// ── LOGIN ──
+function doLogin(){
+  if(document.getElementById('aPass').value===ADMIN_PASS){
+    document.getElementById('aLogin').style.display='none';
+    document.getElementById('aPanel').style.display='flex';
+    document.getElementById('logoutBtn').style.display='block';
+    document.getElementById('aPass').value='';
+    document.getElementById('aErr').style.display='none';
+    loadConfig();loadProgs();renderProgList();
+  }else{document.getElementById('aErr').style.display='block'}
 }
-function logout() {
-  document.getElementById('adminLogin').style.display = 'flex';
-  document.getElementById('adminPanel').style.display = 'none';
-  document.getElementById('logoutBtn').style.display = 'none';
+function logout(){
+  document.getElementById('aLogin').style.display='flex';
+  document.getElementById('aPanel').style.display='none';
+  document.getElementById('logoutBtn').style.display='none';
 }
 
-// ─── M3U / XTREAM ───
-async function loadXtream() {
-  let server = document.getElementById('xtServer').value.trim().replace(/\/$/, '');
-  const user = document.getElementById('xtUser').value.trim();
-  const pass = document.getElementById('xtPass').value.trim();
-  try { const u = new URL(server); server = u.origin; } catch(e) {}
-  if (!server || !user || !pass) { toast('Remplissez tous les champs', true); return; }
-  document.getElementById('loadInfo').textContent = '⏳ Connexion...';
-  const proxies = [
-    `${server}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`,
-    `https://corsproxy.io/?${encodeURIComponent(`${server}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(`${server}/player_api.php?username=${user}&password=${pass}&action=get_live_streams`)}`
+// ── XTREAM / M3U ──
+async function loadXtream(){
+  let srv=document.getElementById('xtSrv').value.trim().replace(/\/$/,'');
+  const usr=document.getElementById('xtUsr').value.trim();
+  const pwd=document.getElementById('xtPwd').value.trim();
+  try{const u=new URL(srv);srv=u.origin}catch(e){}
+  if(!srv||!usr||!pwd){toast('Remplissez tous les champs',true);return}
+  document.getElementById('ldInfo').textContent='⏳ Connexion...';
+  const urls=[
+    `${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`,
+    `https://corsproxy.io/?${encodeURIComponent(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`)}`
   ];
-  let i = 0;
-  async function tryNext() {
-    if (i >= proxies.length) { document.getElementById('loadInfo').textContent = '❌ Échec — utilisez 📁 Fichier'; return; }
-    try {
-      const r = await fetch(proxies[i++]);
-      const data = await r.json();
-      if (!Array.isArray(data)) throw new Error();
-      allCh = data.map(s => ({ name: s.name||'Chaîne', group: s.category_name||'Autres', logo: s.stream_icon||'', url: `${server}/live/${user}/${pass}/${s.stream_id}.m3u8` }));
-      applyChannels();
-    } catch(e) { tryNext(); }
+  for(const url of urls){
+    try{
+      const r=await fetch(url);const d=await r.json();
+      if(!Array.isArray(d))continue;
+      allCh=d.map(s=>({name:s.name||'Chaîne',group:s.category_name||'Autres',logo:s.stream_icon||'',url:`${srv}/live/${usr}/${pwd}/${s.stream_id}.m3u8`}));
+      applyChannels();return;
+    }catch(e){}
   }
-  tryNext();
+  document.getElementById('ldInfo').textContent='❌ Échec — utilisez 📁 Fichier';
 }
 
-function loadFromFile(input) {
-  const f = input.files[0]; if (!f) return;
-  const r = new FileReader();
-  r.onload = e => {
-    const lines = e.target.result.split('\n').map(l=>l.trim()).filter(Boolean);
-    allCh = []; let cur = {};
-    for (const l of lines) {
-      if (l.startsWith('#EXTINF')) {
-        cur = {};
-        const nm = l.match(/,(.+)$/); cur.name = nm?nm[1].trim():'Chaîne';
-        const gr = l.match(/group-title="([^"]*)"/); cur.group = gr?gr[1]:'Autres';
-        const lg = l.match(/tvg-logo="([^"]*)"/); cur.logo = lg?lg[1]:'';
-      } else if (/^(http|rtmp|rtsp)/.test(l)) {
-        if (cur.name) { cur.url = l; allCh.push({...cur}); cur = {}; }
+function loadFile(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    const lines=e.target.result.split('\n').map(l=>l.trim()).filter(Boolean);
+    allCh=[];let cur={};
+    for(const l of lines){
+      if(l.startsWith('#EXTINF')){
+        cur={};
+        const nm=l.match(/,(.+)$/);cur.name=nm?nm[1].trim():'Chaîne';
+        const gr=l.match(/group-title="([^"]*)"/);cur.group=gr?gr[1]:'Autres';
+        const lg=l.match(/tvg-logo="([^"]*)"/);cur.logo=lg?lg[1]:'';
+      }else if(/^(http|rtmp|rtsp)/.test(l)){
+        if(cur.name){cur.url=l;allCh.push({...cur});cur={}}
       }
     }
     applyChannels();
@@ -858,321 +634,279 @@ function loadFromFile(input) {
   r.readAsText(f);
 }
 
-function applyChannels() {
-  filtCh = [...allCh];
-  const groups = new Set(allCh.map(c=>c.group));
-  document.getElementById('stTotal').textContent = allCh.length;
-  document.getElementById('stGroups').textContent = groups.size;
-  document.getElementById('chCount').textContent = `${allCh.length} chaînes`;
-  document.getElementById('loadInfo').textContent = `✅ ${allCh.length} chaînes chargées`;
-  renderChList(filtCh);
-  toast(`${allCh.length} chaînes chargées !`);
+function applyChannels(){
+  filtCh=[...allCh];
+  const gr=new Set(allCh.map(c=>c.group));
+  document.getElementById('stCh').textContent=allCh.length;
+  document.getElementById('stGr').textContent=gr.size;
+  document.getElementById('chCt').textContent=`${allCh.length} chaînes`;
+  document.getElementById('ldInfo').textContent=`✅ ${allCh.length} chaînes`;
+  renderCh(filtCh);toast(`${allCh.length} chaînes chargées !`);
 }
 
-function filterCh(q) {
-  filtCh = allCh.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || c.group.toLowerCase().includes(q.toLowerCase()));
-  document.getElementById('chCount').textContent = `${filtCh.length} résultats`;
-  renderChList(filtCh);
+function filterCh(q){
+  filtCh=allCh.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.group.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('chCt').textContent=`${filtCh.length} résultats`;
+  renderCh(filtCh);
 }
 
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function renderChList(chs) {
-  const el = document.getElementById('chList');
-  if (!chs.length) { el.innerHTML = '<div class="empty-msg">Aucune chaîne</div>'; return; }
-  const progUrls = new Set(programs.map(p=>p.url));
-  el.innerHTML = chs.map((c,i) => `
-    <div class="ch-item">
-      <div class="ch-logo">${c.logo?`<img src="${esc(c.logo)}" onerror="this.style.display='none'" alt="">`:'📺'}</div>
-      <div class="ch-info">
-        <div class="ch-name">${esc(c.name)}</div>
-        <div class="ch-grp">${esc(c.group)}</div>
-      </div>
-      <button class="btn-add-prog ${progUrls.has(c.url)?'added':''}" onclick="addProgram(${i})">${progUrls.has(c.url)?'✔ Ajouté':'+ Ajouter'}</button>
+function renderCh(chs){
+  const el=document.getElementById('clist');
+  const progUrls=new Set(progs.map(p=>p.url));
+  if(!chs.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--mut);font-size:.78rem">Aucun résultat</div>';return}
+  el.innerHTML=chs.map((c,i)=>`
+    <div class="citem">
+      <div class="clogo">${c.logo?`<img src="${esc(c.logo)}" onerror="this.style.display='none'" alt="">`:' 📺'}</div>
+      <div class="cinfo"><div class="cname">${esc(c.name)}</div><div class="cgrp">${esc(c.group)}</div></div>
+      <button class="badd ${progUrls.has(c.url)?'added':''}" onclick="addProg(${i})">${progUrls.has(c.url)?'✔':'+'}</button>
     </div>
   `).join('');
 }
 
-// ─── PROGRAMS ───
-function addProgram(idx) {
-  const ch = filtCh[idx]; if (!ch) return;
-  if (programs.find(p=>p.url===ch.url)) { toast('Déjà ajouté !', true); return; }
-  programs.push({ name: ch.name, url: ch.url, thumb: ch.logo||'', desc: ch.group });
-  savePrograms();
-  refreshProgAdminList();
-  renderChList(filtCh);
-  document.getElementById('stProgs').textContent = programs.length;
-  document.getElementById('progCount').textContent = programs.length;
+// ── PROGRAMS ──
+function addProg(idx){
+  const ch=filtCh[idx];if(!ch)return;
+  if(progs.find(p=>p.url===ch.url)){toast('Déjà ajouté !',true);return}
+  progs.push({name:ch.name,url:ch.url,thumb:ch.logo||'',desc:ch.group});
+  saveAll();renderProgList();renderCh(filtCh);updateStats();
   toast(`"${ch.name}" ajouté !`);
 }
 
-function removeProgram(idx) {
-  programs.splice(idx, 1);
-  savePrograms();
-  refreshProgAdminList();
-  renderChList(filtCh);
-  document.getElementById('stProgs').textContent = programs.length;
-  document.getElementById('progCount').textContent = programs.length;
-  toast('Programme retiré');
+function removeProg(i){progs.splice(i,1);saveAll();renderProgList();renderCh(filtCh);updateStats()}
+function renameProg(i){const n=prompt('Nouveau nom :',progs[i].name);if(n&&n.trim()){progs[i].name=n.trim();saveAll();renderProgList()}}
+function editDesc(i){const d=prompt('Description :',progs[i].desc||'');if(d!==null){progs[i].desc=d.trim();saveAll();renderProgList()}}
+
+async function setLive(i){
+  const p=progs[i];if(!p)return;
+  localStorage.setItem('bs:live',JSON.stringify({name:p.name,url:p.url,thumb:p.thumb||''}));
+  await saveAll();
+  showLiveBanner();
+  toast('🔴 "'+p.name+'" est en live pour tous !');
 }
 
-function renameProgram(idx) {
-  const newName = prompt('Nouveau nom du programme :', programs[idx].name);
-  if (!newName || !newName.trim()) return;
-  programs[idx].name = newName.trim();
-  savePrograms();
-  refreshProgAdminList();
-  toast('Nom mis à jour !');
+function openThumbPicker(i){
+  editThumbIdx=i;
+  if(confirm('OK = choisir un fichier\nAnnuler = entrer une URL')){
+    document.getElementById('thumbFile').click();
+  }else{
+    const u=prompt('URL de l\'image :',progs[i].thumb||'');
+    if(u!==null){progs[i].thumb=u.trim();saveAll();renderProgList()}
+  }
 }
 
-function editDesc(idx) {
-  const newDesc = prompt('Description (ex: Champions League, NBA...) :', programs[idx].desc||'');
-  if (newDesc === null) return;
-  programs[idx].desc = newDesc.trim();
-  savePrograms();
-  refreshProgAdminList();
+function handleThumb(input){
+  if(!input.files[0]||editThumbIdx<0)return;
+  const r=new FileReader();
+  r.onload=e=>{progs[editThumbIdx].thumb=e.target.result;saveAll();renderProgList();toast('Image mise à jour !');editThumbIdx=-1};
+  r.readAsDataURL(input.files[0]);input.value='';
 }
 
-function refreshProgAdminList() {
-  const el = document.getElementById('progAdminList');
-  if (!programs.length) { el.innerHTML = '<div class="empty-msg">Aucun programme — ajoutez des chaînes depuis la liste</div>'; return; }
-  el.innerHTML = programs.map((p,i) => `
-    <div class="prog-admin-card">
-      <div class="prog-admin-thumb" onclick="openThumbPicker(${i})">
-        ${p.thumb ? `<img src="${esc(p.thumb)}" alt="" onerror="this.style.display='none'">` : '<span style="font-size:1.2rem">📺</span>'}
-        <div class="thumb-overlay">📷 Changer</div>
+function renderProgList(){
+  const el=document.getElementById('progList');
+  document.getElementById('progCt').textContent=progs.length;
+  if(!progs.length){el.innerHTML='<div style="padding:30px;text-align:center;color:var(--mut);font-family:\'Barlow Condensed\',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase">Aucun programme — ajoutez des chaînes</div>';return}
+  el.innerHTML=progs.map((p,i)=>`
+    <div class="progcard">
+      <div class="pthumb-a" onclick="openThumbPicker(${i})">
+        ${p.thumb?`<img src="${esc(p.thumb)}" alt="" onerror="this.style.display='none'">`:' <span style="font-size:1.2rem">📺</span>'}
+        <div class="tov">📷</div>
       </div>
-      <div class="prog-admin-info">
-        <div class="prog-admin-name">${esc(p.name)}</div>
-        <div class="prog-admin-url">${esc(p.url)}</div>
-        <div class="prog-admin-actions">
-          <button class="btn-edit-name" onclick="renameProgram(${i})">✏ Renommer</button>
-          <button class="btn-edit-name" onclick="editDesc(${i})">📝 Description</button>
-          <button class="btn-edit-name" style="border-color:var(--red);color:var(--red)" onclick="setAsLive(${i})">🔴 Mettre en live</button>
-          <button class="btn-del" onclick="removeProgram(${i})">🗑 Retirer</button>
+      <div class="pinfo-a">
+        <div class="pname-a">${esc(p.name)}</div>
+        <div class="purl-a">${esc(p.url)}</div>
+        <div class="pacts">
+          <button class="bact live" onclick="setLive(${i})">🔴 Live</button>
+          <button class="bact" onclick="renameProg(${i})">✏ Nom</button>
+          <button class="bact" onclick="editDesc(${i})">📝 Desc</button>
+          <button class="bact del" onclick="removeProg(${i})">🗑</button>
         </div>
       </div>
     </div>
   `).join('');
 }
 
-// ─── THUMBNAIL PICKER ───
-function openThumbPicker(idx) {
-  editingThumbIdx = idx;
-  const choice = confirm('Utiliser une image depuis votre ordi ?\n\nOK = choisir un fichier\nAnnuler = entrer une URL');
-  if (choice) {
-    document.getElementById('thumbFileInput').click();
-  } else {
-    const url = prompt('URL de l\'image (http://...) :', programs[idx].thumb||'');
-    if (url !== null) {
-      programs[idx].thumb = url.trim();
-      savePrograms();
-      refreshProgAdminList();
-    }
-  }
+function updateStats(){
+  document.getElementById('stPr').textContent=progs.length;
+  document.getElementById('progCt').textContent=progs.length;
 }
 
-function handleThumbUpload(input) {
-  if (!input.files[0] || editingThumbIdx < 0) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    programs[editingThumbIdx].thumb = e.target.result;
-    savePrograms();
-    refreshProgAdminList();
-    toast('Image mise à jour !');
-    editingThumbIdx = -1;
-  };
-  reader.readAsDataURL(input.files[0]);
-  input.value = '';
-}
-
-// ─── PUBLIC PROGRAMS GRID ───
-function renderPublicPrograms() {
-  // async: loadProgramsPublic will call renderGrid when done
-  loadProgramsPublic();
-}
-function watchLive() {
-  const ch = getLiveChannel();
-  if (!ch) return;
-  document.getElementById('pChName').textContent = ch.name;
-  document.getElementById('pStatus').textContent = 'Connexion établie';
-  go('page-player');
-  setTimeout(() => startPlayer(ch.url), 100);
-}
-
-function showNowLiveBanner() {
-  const ch = getLiveChannel();
-  const banner = document.getElementById('nowLiveBanner');
-  if (!banner) return;
-  if (ch && ch.url) {
-    banner.style.display = 'flex';
-    document.getElementById('nowLiveName').textContent = ch.name;
-  } else {
-    banner.style.display = 'none';
-  }
-}
-
-function renderGrid() {
-  const grid = document.getElementById('programsGrid');
-  if (!programs.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1"><div class="no-programs"><span>📡</span><p>Aucun programme en direct</p><small style="color:#444;font-size:.75rem">Revenez plus tard ou contactez-nous sur Discord</small></div></div>`;
+// ── PUBLIC GRID ──
+function renderGrid(){
+  const grid=document.getElementById('pgrid');
+  if(!progs.length){
+    grid.innerHTML='<div class="noprog"><span>📡</span><p>Aucun programme en direct</p></div>';
     return;
   }
-  showNowLiveBanner();
-  grid.innerHTML = programs.map((p,i) => `
-    <div class="prog-card" onclick="watchProgram(${i})">
-      <div class="prog-thumb">
-        ${p.thumb ? `<img src="${esc(p.thumb)}" alt="${esc(p.name)}" onerror="this.parentElement.innerHTML='<div class=prog-thumb-placeholder>📺</div>'">` : '<div class="prog-thumb-placeholder">📺</div>'}
-        <div class="prog-live-badge"><div class="live-dot" style="width:6px;height:6px;background:#fff"></div>LIVE</div>
+  grid.innerHTML=progs.map((p,i)=>`
+    <div class="pcard" onclick="watchProg(${i})">
+      <div class="pthumb">
+        ${p.thumb?`<img src="${esc(p.thumb)}" alt="${esc(p.name)}" onerror="this.parentElement.innerHTML='<div class=pthumb-ph>📺</div>'">`:'<div class="pthumb-ph">📺</div>'}
+        <div class="plive"><div class="dot" style="background:#fff;width:5px;height:5px"></div>LIVE</div>
       </div>
-      <div class="prog-info">
-        <div class="prog-name">${esc(p.name)}</div>
-        ${p.desc ? `<div class="prog-desc">${esc(p.desc)}</div>` : ''}
-      </div>
-      <button class="prog-watch-btn">▶ Regarder</button>
+      <div class="pinfo"><div class="pname">${esc(p.name)}</div>${p.desc?`<div class="pdesc">${esc(p.desc)}</div>`:''}</div>
+      <button class="pwbtn">▶ Regarder</button>
     </div>
   `).join('');
 }
 
-// ─── WATCH ───
-async function setAsLive(idx) {
-  const p = programs[idx]; if (!p) return;
-  await setLiveChannel(p.name, p.url, p.thumb || '');
-  toast('🔴 "' + p.name + '" est maintenant en live pour tous les visiteurs !');
-  refreshProgAdminList();
+function showLiveBanner(){
+  try{
+    const ch=JSON.parse(localStorage.getItem('bs:live')||'null');
+    const b=document.getElementById('nowLiveBanner');
+    if(ch&&ch.url){b.style.display='flex';document.getElementById('nowLiveName').textContent=ch.name}
+    else b.style.display='none';
+  }catch(e){}
 }
 
-function watchProgram(idx) {
-  const p = programs[idx]; if (!p) return;
-  currentProgIdx = idx;
-  document.getElementById('pChName').textContent = p.name;
-  document.getElementById('pStatus').textContent = 'Connexion établie';
-  go('page-player');
-  setTimeout(() => startPlayer(p.url), 100);
+function watchLive(){
+  try{
+    const ch=JSON.parse(localStorage.getItem('bs:live')||'null');
+    if(!ch)return;
+    document.getElementById('plName').textContent=ch.name;
+    document.getElementById('plStatus').textContent='Connexion établie';
+    go('pg-player');
+    setTimeout(()=>startPlayer(ch.url),100);
+  }catch(e){}
 }
 
-function startPlayer(url) {
-  const ph = document.getElementById('playerPH');
-  const v  = document.getElementById('mainVideo');
-  const lo = document.getElementById('liveOverlay');
+function watchProg(i){
+  const p=progs[i];if(!p)return;
+  document.getElementById('plName').textContent=p.name;
+  document.getElementById('plStatus').textContent='Connexion établie';
+  go('pg-player');
+  setTimeout(()=>startPlayer(p.url),100);
+}
 
-  ph.style.display = 'none';
-  v.style.display = 'block';
-  lo.classList.remove('show');
-
-  if (hlsMain) { hlsMain.destroy(); hlsMain = null; }
-
-  const tsUrl = url.replace(/\.m3u8$/, '') + '.ts';
-
-  function startHls(src, isFallback) {
-    if (!Hls.isSupported()) {
-      if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = src; v.play().catch(()=>{}); lo.classList.add('show'); }
-      return;
-    }
-    hlsMain = new Hls({ enableWorker: true, lowLatencyMode: true });
-    hlsMain.loadSource(src);
-    hlsMain.attachMedia(v);
-    hlsMain.on(Hls.Events.MANIFEST_PARSED, () => {
-      v.play().catch(()=>{});
-      lo.classList.add('show');
-    });
-    hlsMain.on(Hls.Events.ERROR, (_, data) => {
-      if (data.fatal) {
-        hlsMain.destroy();
-        if (!isFallback) { startHls(tsUrl, true); }
-        else {
-          ph.style.display = 'flex';
-          ph.querySelector('p').textContent = '⚠ Flux indisponible';
-          ph.querySelector('small').textContent = 'Réessayez dans quelques instants';
-          v.style.display = 'none';
-          lo.classList.remove('show');
-        }
-      }
-    });
+// ── PLAYER ──
+function startPlayer(url){
+  const ph=document.getElementById('sph');
+  const v=document.getElementById('vid');
+  const lo=document.getElementById('liveOv');
+  ph.style.display='none';v.style.display='block';lo.classList.remove('show');
+  if(hlsI){hlsI.destroy();hlsI=null}
+  const tsUrl=url.replace(/\.m3u8$/,'')+'.ts';
+  function tryHls(src,fb){
+    if(!Hls.isSupported()){if(v.canPlayType('application/vnd.apple.mpegurl')){v.src=src;v.play().catch(()=>{});lo.classList.add('show')}return}
+    hlsI=new Hls({enableWorker:true,lowLatencyMode:true});
+    hlsI.loadSource(src);hlsI.attachMedia(v);
+    hlsI.on(Hls.Events.MANIFEST_PARSED,()=>{v.play().catch(()=>{});lo.classList.add('show');document.getElementById('plStatus').textContent='En direct'});
+    hlsI.on(Hls.Events.ERROR,(_,d)=>{if(d.fatal){hlsI.destroy();if(!fb)tryHls(tsUrl,true);else{ph.style.display='flex';ph.querySelector('p').textContent='⚠ Flux indisponible';v.style.display='none'}}});
   }
-  startHls(url, false);
+  tryHls(url,false);
 }
 
-// Init on load
-window.addEventListener('load', () => {
-  initSplash();
-  // Show popup only if enabled by admin (after splash)
-  setTimeout(() => {
-    if (localStorage.getItem('bsport:popup') === 'on') {
-      setTimeout(showAd, 1000);
-    }
-  }, 2000);
+// ── POPUP ADS ──
+const AD_CFG={
+  discord:{icon:'🎮',title:'Rejoignez notre<br><span style="color:#5865F2">Discord</span>',sub:'Support & offres exclusives',btn:'➤ Rejoindre le Discord',color:'#5865F2',action:()=>window.open(getDc(),'_blank')},
+  telegram:{icon:'📲',title:'Rejoignez notre<br><span style="color:var(--tg)">Telegram</span>',sub:'Toutes nos offres et actualités',btn:'➤ Rejoindre le Telegram',color:'var(--tg)',action:()=>window.open(getTg(),'_blank')},
+  abo:{icon:'🔥📺🏆',title:'Accès <span style="color:var(--red)">ILLIMITÉ</span><br>à l\'IPTV',sub:'Chaînes · Films · Séries',btn:'🚀 S\'abonner maintenant',color:'var(--red)',action:()=>go('pg-access')}
+};
 
-  loadPrograms();
-  refreshDiscordLinks();
+function triggerAd(type){
+  localStorage.setItem('bs:ad',type);
+  showAdType(type);
+  toast('Popup "'+type+'" activée !');
+}
+
+function stopAd(){
+  localStorage.removeItem('bs:ad');
+  closeAd();
+  toast('Popup désactivée');
+}
+
+function showAdType(type){
+  const c=AD_CFG[type];if(!c)return;
+  document.getElementById('adIcon').textContent=c.icon;
+  document.getElementById('adTitle').innerHTML=c.title;
+  document.getElementById('adSub').textContent=c.sub;
+  const btn=document.getElementById('adMainBtn');
+  btn.textContent=c.btn;btn.style.background=c.color;
+  btn.onclick=()=>{c.action();closeAd()};
+  const popup=document.getElementById('adPopup');
+  popup.style.display='flex';
+  startAdCd();
+}
+
+function startAdCd(){
+  let n=5;
+  const cb=document.getElementById('adCloseBtn');
+  const sk=document.getElementById('adSkip');
+  cb.disabled=true;cb.style.cursor='not-allowed';cb.style.borderColor='var(--brd)';cb.style.color='var(--mut)';cb.style.background='rgba(255,255,255,.05)';
+  sk.disabled=true;sk.style.opacity='.4';sk.style.cursor='not-allowed';
+  document.getElementById('adCt').textContent=n;
+  document.getElementById('adSkipCt').textContent=n;
+  clearInterval(adTimer);
+  adTimer=setInterval(()=>{
+    n--;
+    document.getElementById('adCt').textContent=n;
+    document.getElementById('adSkipCt').textContent=n;
+    if(n<=0){
+      clearInterval(adTimer);
+      cb.disabled=false;cb.style.cursor='pointer';cb.style.borderColor='var(--red)';cb.style.color='#fff';cb.style.background='var(--red)';cb.innerHTML='✕';
+      sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Continuer vers le site';
+    }
+  },1000);
+}
+
+function closeAd(){clearInterval(adTimer);document.getElementById('adPopup').style.display='none'}
+
+// ── SPLASH ──
+function initSplash(){
+  const v=parseInt(localStorage.getItem('bs:visits')||'0')+1;
+  localStorage.setItem('bs:visits',v);
+  for(let i=1;i<=3;i++){const d=document.getElementById('d'+i);if(d)d.className='sdot'+(i<=v?' on':'')}
+
+  if(v===1){
+    document.getElementById('sIcon').textContent='📲';
+    document.getElementById('sTitle').innerHTML='Rejoignez notre<br><span style="color:var(--tg)">Telegram</span>';
+    document.getElementById('sSub').textContent='Toutes nos offres et actualités';
+    const btn=document.getElementById('sBtn');btn.textContent='➤ Rejoindre le Telegram';btn.style.background='var(--tg)';
+  }else if(v===2){
+    document.getElementById('sIcon').textContent='🎮';
+    document.getElementById('sTitle').innerHTML='Rejoignez notre<br><span style="color:#5865F2">Discord</span>';
+    document.getElementById('sSub').textContent='Support, offres exclusives & plus';
+    const btn=document.getElementById('sBtn');btn.textContent='➤ Rejoindre le Discord';btn.style.background='#5865F2';
+  }else{
+    enterSite();return;
+  }
+
+  let ct=5;
+  document.getElementById('sCt').textContent=ct;
+  clearInterval(splashTimer);
+  splashTimer=setInterval(()=>{
+    ct--;document.getElementById('sCt').textContent=ct;
+    if(ct<=0){
+      clearInterval(splashTimer);
+      const sk=document.getElementById('sSkip');
+      sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Ignorer →';
+    }
+  },1000);
+}
+
+function splashAction(){
+  clearInterval(splashTimer);
+  const v=parseInt(localStorage.getItem('bs:visits')||'1');
+  if(v===1)window.open(getTg(),'_blank');
+  else if(v===2)window.open(getDc(),'_blank');
+  enterSite();
+}
+
+function splashSkip(){clearInterval(splashTimer);enterSite()}
+
+function enterSite(){
+  const s=document.getElementById('splash');
+  s.style.opacity='0';s.style.transition='opacity .4s';
+  setTimeout(()=>s.style.display='none',400);
+  // Show ad popup if active
+  const adType=localStorage.getItem('bs:ad');
+  if(adType)setTimeout(()=>showAdType(adType),800);
+}
+
+// ── INIT ──
+window.addEventListener('load',()=>{
+  updateDiscordLinks();
+  initSplash();
 });
 </script>
-<!-- ============ POPUP PUB ============ -->
-<div id="adPopup" style="display:none;position:fixed;inset:0;z-index:9000;align-items:center;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(4px)">
-  <div style="background:linear-gradient(135deg,#0d0d0d,#1a0005,#0d0d0d);border:2px solid var(--red);border-radius:12px;max-width:480px;width:90%;padding:36px 32px;text-align:center;position:relative;box-shadow:0 0 60px rgba(232,0,30,.3)">
-    <button id="adCloseBtn" onclick="closeAd()" disabled style="position:absolute;top:12px;right:14px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);border-radius:50%;width:32px;height:32px;cursor:not-allowed;font-size:.82rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;transition:all .3s;display:flex;align-items:center;justify-content:center">
-      <span id="adCountdown">5</span>
-    </button>
-    <div style="font-size:2.2rem;margin-bottom:12px">🔥📺🏆</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;line-height:1.1;margin-bottom:10px">
-      Accès <span style="color:var(--red)">illimité</span><br>à l'IPTV
-    </div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:600;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:20px">
-      Chaînes · Films · Séries
-    </div>
-    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:22px;flex-wrap:wrap">
-      <div style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:8px 16px">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted)">Dès</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--text)">9.99€<span style="font-size:.8rem">/mois</span></div>
-      </div>
-      <div style="background:rgba(232,0,30,.1);border:1px solid var(--red);border-radius:6px;padding:8px 16px">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--red)">Meilleur prix 🏆</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--red)">39.99€<span style="font-size:.8rem">/an</span></div>
-      </div>
-    </div>
-    <div style="font-size:.75rem;color:var(--muted);margin-bottom:16px">💳 PayPal &amp; Crypto acceptés · Activation en moins de 24h</div>
-    <button onclick="closeAd();go('page-access')" style="width:100%;padding:15px;background:var(--red);color:#fff;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;animation:subPulse 2s infinite">
-      🚀 S'abonner maintenant
-    </button>
-    <button id="adSkipBtn" onclick="closeAd()" disabled style="width:100%;padding:10px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:not-allowed;opacity:.5">
-      Passer dans <span id="adSkipCount">5</span>s...
-    </button>
-  </div>
-</div>
-
-<!-- ============ SPLASH SCREEN ============ -->
-<div id="splashScreen" style="display:none;position:fixed;inset:0;z-index:9999;background:#080808;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px">
-  <!-- Background grid -->
-  <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 79px,rgba(255,255,255,.02) 80px),radial-gradient(ellipse 80% 50% at 50% 0%,rgba(232,0,30,.1) 0%,transparent 70%);pointer-events:none"></div>
-
-  <div style="position:relative;z-index:1;max-width:520px;width:100%">
-    <!-- Logo -->
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;letter-spacing:6px;margin-bottom:4px">B<span style="color:var(--red)">S</span>PORT</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--muted);margin-bottom:40px">Live Streaming</div>
-
-    <!-- Dynamic content -->
-    <div id="splashIcon" style="font-size:3rem;margin-bottom:16px">🔥</div>
-    <div id="splashTitle" style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;line-height:1.1;margin-bottom:10px;color:var(--text)"></div>
-    <div id="splashSub" style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:32px"></div>
-
-    <!-- Main button -->
-    <button id="splashBtn" onclick="splashAction()" style="width:100%;max-width:360px;padding:18px;background:var(--red);color:#fff;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;animation:subPulse 2s infinite;margin-bottom:12px"></button>
-
-    <!-- Skip (only on visit 1 and 2) -->
-    <div id="splashSkipWrap">
-      <button id="splashSkip" onclick="skipSplash()" disabled style="background:transparent;border:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:not-allowed;opacity:.4">
-        Ignorer dans <span id="splashCount">5</span>s
-      </button>
-    </div>
-
-    <!-- Visit indicator -->
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:28px">
-      <div id="dot1" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
-      <div id="dot2" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
-      <div id="dot3" style="width:8px;height:8px;border-radius:50%;background:var(--border)"></div>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
