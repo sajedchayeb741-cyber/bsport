@@ -519,7 +519,13 @@ async function gistLoad(){
 }
 
 async function saveAll(){
-  const data={progs,discord:getDc(),telegram:getTg(),liveChannel:JSON.parse(localStorage.getItem('bs:live')||'null')};
+  const data={
+    progs,
+    discord:getDc(),
+    telegram:getTg(),
+    liveChannel:JSON.parse(localStorage.getItem('bs:live')||'null'),
+    activeAd:localStorage.getItem('bs:ad')||null
+  };
   localStorage.setItem('bs:progs',JSON.stringify(progs));
   const ok=await gistSave(data);
   if(ok)toast('✅ Synchronisé !');
@@ -572,8 +578,22 @@ function doLogin(){
     document.getElementById('xtSrv').value='http://mgdata.online:2052';
     document.getElementById('xtUsr').value='cpYzp8Ew';
     document.getElementById('xtPwd').value='cbX1S4W';
-    // Auto-load channels
-    setTimeout(loadXtream, 500);
+    // Restore channels from localStorage if available
+    try{
+      const saved=localStorage.getItem('bs:allCh');
+      if(saved){
+        allCh=JSON.parse(saved);
+        filtCh=[...allCh];
+        const gr=new Set(allCh.map(c=>c.group));
+        document.getElementById('stCh').textContent=allCh.length;
+        document.getElementById('stGr').textContent=gr.size;
+        document.getElementById('chCt').textContent=allCh.length+' chaînes (sauvegardées)';
+        document.getElementById('ldInfo').textContent='✅ '+allCh.length+' chaînes restaurées automatiquement';
+        renderCh(filtCh);
+      } else {
+        setTimeout(loadXtream,500);
+      }
+    }catch(e){setTimeout(loadXtream,500);}
   }else{document.getElementById('aErr').style.display='block'}
 }
 function logout(){
@@ -584,57 +604,22 @@ function logout(){
 
 // ── XTREAM / M3U ──
 async function loadXtream(){
-  // Try direct M3U URL first (most reliable)
-  const m3uUrl='http://mgdata.online:2052/get.php?username=cpYzp8Ew&password=cbX1S4W&type=m3u_plus&output=ts';
-  const proxies_m3u=[
-    `https://corsproxy.io/?${encodeURIComponent(m3uUrl)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(m3uUrl)}`
-  ];
-  document.getElementById('ldInfo').textContent='⏳ Chargement playlist...';
-  for(const url of proxies_m3u){
-    try{
-      const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
-      const txt=await r.text();
-      if(txt.includes('#EXTINF')||txt.includes('#EXTM3U')){
-        const lines=txt.split('\n').map(l=>l.trim()).filter(Boolean);
-        allCh=[];let cur={};
-        for(const l of lines){
-          if(l.startsWith('#EXTINF')){
-            cur={};
-            const nm=l.match(/,(.+)$/);cur.name=nm?nm[1].trim():'Chaîne';
-            const gr=l.match(/group-title="([^"]*)"/);cur.group=gr?gr[1]:'Autres';
-            const lg=l.match(/tvg-logo="([^"]*)"/);cur.logo=lg?lg[1]:'';
-          }else if(/^(http|rtmp|rtsp)/.test(l)){
-            if(cur.name){cur.url=l;allCh.push({...cur});cur={}}
-          }
-        }
-        if(allCh.length>0){applyChannels();return;}
-      }
-    }catch(e){continue}
-  }
-  // Fallback to API method below
+  const srv='http://mgdata.online:2052';
+  const usr='cpYzp8Ew';
+  const pwd='cbX1S4W';
+  document.getElementById('ldInfo').textContent='⏳ Chargement...';
 
-  let srv=document.getElementById('xtSrv').value.trim().replace(/\/$/,'');
-  const usr=document.getElementById('xtUsr').value.trim();
-  const pwd=document.getElementById('xtPwd').value.trim();
-  // Extract base URL if full URL was pasted
-  try{const u=new URL(srv);srv=u.origin}catch(e){}
-  if(!srv||!usr||!pwd){toast('Remplissez tous les champs',true);return}
-  document.getElementById('ldInfo').textContent='⏳ Connexion en cours...';
-  
+  // Try Xtream API via multiple proxies
   const apiUrl=`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`;
   const proxies=[
-    apiUrl,
     `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
-    `https://cors-anywhere.herokuapp.com/${apiUrl}`,
-    `https://crossorigin.me/${apiUrl}`
+    `https://thingproxy.freeboard.io/fetch/${apiUrl}`
   ];
-  
+
   for(const url of proxies){
     try{
-      document.getElementById('ldInfo').textContent='⏳ Tentative...';
-      const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+      const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
       const txt=await r.text();
       let d;
       try{d=JSON.parse(txt)}catch(e){continue}
@@ -649,7 +634,36 @@ async function loadXtream(){
       return;
     }catch(e){continue}
   }
-  document.getElementById('ldInfo').innerHTML='❌ CORS bloqué — <strong>utilisez le bouton 📁 Fichier</strong> à la place (téléchargez votre .m3u et importez-le)';
+
+  // Fallback: try M3U playlist via proxy
+  const m3uUrl=`${srv}/get.php?username=${usr}&password=${pwd}&type=m3u_plus&output=ts`;
+  const m3uProxies=[
+    `https://corsproxy.io/?${encodeURIComponent(m3uUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(m3uUrl)}`
+  ];
+
+  for(const url of m3uProxies){
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
+      const txt=await r.text();
+      if(!txt.includes('#EXTINF'))continue;
+      const lines=txt.split('\n').map(l=>l.trim()).filter(Boolean);
+      allCh=[];let cur={};
+      for(const l of lines){
+        if(l.startsWith('#EXTINF')){
+          cur={};
+          const nm=l.match(/,(.+)$/);cur.name=nm?nm[1].trim():'Chaîne';
+          const gr=l.match(/group-title="([^"]*)"/);cur.group=gr?gr[1]:'Autres';
+          const lg=l.match(/tvg-logo="([^"]*)"/);cur.logo=lg?lg[1]:'';
+        }else if(/^(http|rtmp|rtsp)/.test(l)){
+          if(cur.name){cur.url=l;allCh.push({...cur});cur={}}
+        }
+      }
+      if(allCh.length>0){applyChannels();return;}
+    }catch(e){continue}
+  }
+
+  document.getElementById('ldInfo').textContent='❌ Serveur IPTV inaccessible — réessayez dans quelques instants';
 }
 
 function loadFile(input){
@@ -679,8 +693,11 @@ function applyChannels(){
   document.getElementById('stCh').textContent=allCh.length;
   document.getElementById('stGr').textContent=gr.size;
   document.getElementById('chCt').textContent=`${allCh.length} chaînes`;
-  document.getElementById('ldInfo').textContent=`✅ ${allCh.length} chaînes`;
-  renderCh(filtCh);toast(`${allCh.length} chaînes chargées !`);
+  document.getElementById('ldInfo').textContent=`✅ ${allCh.length} chaînes chargées`;
+  // Save channel list to localStorage for persistence
+  localStorage.setItem('bs:allCh',JSON.stringify(allCh));
+  renderCh(filtCh);
+  toast(`${allCh.length} chaînes chargées !`);
 }
 
 function filterCh(q){
