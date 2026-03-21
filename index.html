@@ -302,15 +302,7 @@ input[type=file]{display:none}
       </div>
       <div id="mainGrid" class="streams-grid"></div>
     </div>
-    <!-- STREAMS BACKUP -->
-    <div class="section">
-      <div class="section-hdr">
-        <div class="section-dot grey"></div>
-        <div class="section-title">Streams backups</div>
-        <div class="section-count" id="backupCount">0</div>
-      </div>
-      <div id="backupGrid" class="streams-grid"></div>
-    </div>
+
   </div>
   <footer>© 2025 <span>BSPORT</span> — Tous droits réservés</footer>
 </div>
@@ -444,22 +436,26 @@ input[type=file]{display:none}
             <div class="tov">📷 Changer</div>
           </div>
           <input class="ai" id="newName" type="text" placeholder="Nom du stream (ex: PSG vs OM)"/>
-          <input class="ai" id="newUrl" type="text" placeholder="URL du flux (https://...)"/>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <input class="ai" id="newStreamId" type="text" placeholder="ID du flux (ex: 12345)" style="margin:0;flex:1"/>
+            <button class="ab g" onclick="buildUrl()" style="flex-shrink:0;white-space:nowrap">🔗 Générer URL</button>
+          </div>
+          <input class="ai" id="newUrl" type="text" placeholder="URL générée automatiquement..."/>
           <input class="ai" id="newCat" type="text" placeholder="Catégorie (ex: Football, NBA...)"/>
           <div class="row">
-            <button class="ab r" onclick="addStream('main')" style="flex:1">🔴 Ajouter principal</button>
-            <button class="ab" style="border:1px solid var(--org);color:var(--org);flex:1" onclick="addStream('backup')">🟠 Backup</button>
+            <button class="ab r" onclick="addStream('main')" style="width:100%">🔴 Ajouter le stream</button>
+            
           </div>
           <div id="addInfo" style="font-size:.72rem;color:var(--mut);margin-top:8px"></div>
         </div>
         <div class="admin-section">
           <div class="admin-section-title">ℹ️ Comment bien diffuser</div>
           <div style="font-size:.75rem;color:var(--mut);line-height:1.7;background:var(--crd);padding:12px;border-radius:8px;border:1px solid var(--brd)">
-            ✅ Utilisez des URLs <strong style="color:var(--txt)">HTTPS</strong> uniquement<br>
-            ✅ Format recommandé : <strong style="color:var(--txt)">.m3u8</strong><br>
-            ✅ Testez l'URL dans votre navigateur avant<br>
-            ⭐ Meilleure source : <strong style="color:var(--red)">beIN Sports, RMC Sport</strong> via restream<br>
-            💡 Ajoutez 2-3 backups pour chaque stream principal
+            ✅ Proxy actif : <strong style="color:var(--grn)">Cloudflare Worker</strong><br>
+            ✅ Vos flux sont automatiquement en HTTPS<br>
+            📋 Format URL : <span style="color:var(--tg);font-size:.68rem">worker/live/user/pass/ID.m3u8</span><br>
+            💡 Cherchez l'ID dans votre playlist .m3u<br>
+            🔍 Ouvrez votre .m3u, copiez le numéro après <strong style="color:var(--txt)">/live/cpYzp8Ew/cbX1S4W/</strong>
           </div>
         </div>
       </div>
@@ -467,7 +463,7 @@ input[type=file]{display:none}
       <div class="admin-right">
         <div class="stats-row">
           <div class="stat"><div class="stat-num" id="stMain">0</div><div class="stat-lbl">Principaux</div></div>
-          <div class="stat"><div class="stat-num" id="stBackup">0</div><div class="stat-lbl">Backups</div></div>
+          
           <div class="stat"><div class="stat-num" id="stTotal">0</div><div class="stat-lbl">Total</div></div>
         </div>
         <div class="admin-section-title" style="margin-bottom:14px">📺 Streams actifs</div>
@@ -487,6 +483,9 @@ input[type=file]{display:none}
 const PASS = "bsport2025";
 const DISCORD = "https://discord.gg/FABHWRfX";
 const TELEGRAM = "https://t.me/bsport12";
+const WORKER = "https://bsport-proxy.sajedchayeb741.workers.dev";
+const IPTV_USR = "gus0MDKM";
+const IPTV_PWD = "eTNXPQY";
 
 // Gist credentials (encoded)
 function _gi(){return atob(['YThjN2U5Yjc','2YzkxYzY3OD','Y5YjkzZDUyZ','TY3MWI3NGY='].join(''))}
@@ -556,12 +555,9 @@ function saveStreams(){
 
 function updateStats(){
   const main=streams.filter(s=>s.type==='main').length;
-  const backup=streams.filter(s=>s.type==='backup').length;
   const stM=document.getElementById('stMain');
-  const stB=document.getElementById('stBackup');
   const stT=document.getElementById('stTotal');
   if(stM)stM.textContent=main;
-  if(stB)stB.textContent=backup;
   if(stT)stT.textContent=streams.length;
 }
 
@@ -588,17 +584,11 @@ async function loadPublic(){
 // ── RENDER PUBLIC ──
 function renderPublic(){
   const main=streams.filter(s=>s.type==='main');
-  const backup=streams.filter(s=>s.type==='backup');
-
   const mc=document.getElementById('mainCount');
-  const bc=document.getElementById('backupCount');
   const md=document.getElementById('mainDot');
   if(mc)mc.textContent=main.length;
-  if(bc)bc.textContent=backup.length;
   if(md)md.style.background=main.length>0?'var(--red)':'var(--mut)';
-
   renderGrid('mainGrid', main);
-  renderGrid('backupGrid', backup);
 }
 
 function renderGrid(gridId, list){
@@ -693,6 +683,15 @@ function handleThumb(input){
   input.value='';
 }
 
+// BUILD URL FROM STREAM ID
+function buildUrl(){
+  const id = document.getElementById('newStreamId').value.trim();
+  if(!id){toast('Entrez un ID de flux',true);return}
+  const url = `${WORKER}/live/${IPTV_USR}/${IPTV_PWD}/${id}.m3u8`;
+  document.getElementById('newUrl').value = url;
+  toast('URL générée !');
+}
+
 // ADD STREAM
 function addStream(type){
   const name=document.getElementById('newName').value.trim();
@@ -702,7 +701,7 @@ function addStream(type){
   if(!url.startsWith('https')){
     if(!confirm('⚠️ URL en HTTP détectée. Les visiteurs sur HTTPS (GitHub) ne pourront pas voir le stream. Continuer quand même ?'))return;
   }
-  streams.push({id:Date.now(),name,url,cat,thumb:newThumb,type,views:0});
+  streams.push({id:Date.now(),name,url,cat,thumb:newThumb,type:'main',views:0});
   saveStreams();renderAdminList();
   // Reset form
   document.getElementById('newName').value='';
@@ -758,7 +757,7 @@ function renderAdminList(){
         </div>
         <div class="astream-url">${esc(s.url)}</div>
         <div class="astream-acts">
-          <button class="aact" onclick="toggleType(${s.id})">${s.type==='main'?'→ Backup':'→ Principal'}</button>
+        
           <button class="aact" onclick="renameStream(${s.id})">✏ Nom</button>
           <button class="aact del" onclick="removeStream(${s.id})">🗑 Retirer</button>
         </div>
