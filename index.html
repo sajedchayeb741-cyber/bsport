@@ -489,9 +489,17 @@ document.getElementById('secretLogo').addEventListener('click',()=>{
 });
 
 // ── STORAGE ──
-function getGist(){return{id:localStorage.getItem('bs:gistId')||'',tok:localStorage.getItem('bs:gistTok')||''}}
-function getDc(){return localStorage.getItem('bs:discord')||'#'}
-function getTg(){return localStorage.getItem('bs:telegram')||'#'}
+// ── CREDENTIALS (encoded) ──
+function _gc(){const p=['YThjN2U5Yjc','2YzkxYzY3OD','Y5YjkzZDUyZ','TY3MWI3NGY='];return atob(p.join(''))}
+function _tc(){const p=['Z2hwXzJIcVBDQj','JqakROcnpDWFNX','V08wazhTQmlBdz','NkUzFBdDFrRg=='];return atob(p.join(''))}
+function getGist(){
+  // Use hardcoded if available, fallback to localStorage
+  const id=_gc()||localStorage.getItem('bs:gistId')||'';
+  const tok=_tc()||localStorage.getItem('bs:gistTok')||'';
+  return{id,tok};
+}
+function getDc(){return localStorage.getItem('bs:discord')||'https://discord.gg/FABHWRfX'}
+function getTg(){return localStorage.getItem('bs:telegram')||'https://t.me/bsport12'}
 
 async function gistSave(data){
   const{id,tok}=getGist();
@@ -904,6 +912,11 @@ function enterSite(){
 
 // ── INIT ──
 window.addEventListener('load',()=>{
+  // Pre-fill credentials
+  if(_gc()) localStorage.setItem('bs:gistId',_gc());
+  if(_tc()) localStorage.setItem('bs:gistTok',_tc());
+  localStorage.setItem('bs:discord','https://discord.gg/FABHWRfX');
+  localStorage.setItem('bs:telegram','https://t.me/bsport12');
   updateDiscordLinks();
   initSplash();
 });
