@@ -405,15 +405,7 @@ input[type=file]{display:none}
         <button class="bs g" style="border-color:var(--red);color:var(--red)" onclick="triggerAd('abo')">🔥 Abo</button>
         <button class="bs g" id="popOffBtn" onclick="stopAd()">⛔ Stop</button>
       </div>
-      <!-- Config -->
-      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
-        <input class="ainp" id="cfgGistId" type="text" placeholder="Gist ID" style="margin:0;width:130px"/>
-        <input class="ainp" id="cfgToken" type="password" placeholder="GitHub Token" style="margin:0;width:140px"/>
-        <input class="ainp" id="cfgTg" type="text" placeholder="Lien Telegram" style="margin:0;width:150px"/>
-        <input class="ainp" id="cfgDc" type="text" placeholder="Lien Discord" style="margin:0;width:150px"/>
-        <button class="bs r" onclick="saveConfig()">💾 Sauver</button>
-        <button class="bs g" onclick="resetVisits()">🔄 Reset splash</button>
-      </div>
+      <button class="bs g" onclick="resetVisits()">🔄 Reset splash</button>
     </div>
     <div class="abody">
       <!-- LEFT -->
@@ -545,6 +537,10 @@ async function loadPublic(){
     if(remote.discord)localStorage.setItem('bs:discord',remote.discord);
     if(remote.telegram)localStorage.setItem('bs:telegram',remote.telegram);
     if(remote.liveChannel)localStorage.setItem('bs:live',JSON.stringify(remote.liveChannel));
+    // Show popup if admin activated one
+    if(remote.activeAd){
+      setTimeout(()=>showAdType(remote.activeAd),600);
+    }
   }else{
     try{const d=localStorage.getItem('bs:progs');if(d)progs=JSON.parse(d)}catch(e){progs=[]}
   }
@@ -553,25 +549,8 @@ async function loadPublic(){
 }
 
 // ── CONFIG ──
-function saveConfig(){
-  const gId=document.getElementById('cfgGistId').value.trim();
-  const gTok=document.getElementById('cfgToken').value.trim();
-  const tg=document.getElementById('cfgTg').value.trim();
-  const dc=document.getElementById('cfgDc').value.trim();
-  if(gId)localStorage.setItem('bs:gistId',gId);
-  if(gTok&&!gTok.includes('•'))localStorage.setItem('bs:gistTok',gTok);
-  if(tg)localStorage.setItem('bs:telegram',tg);
-  if(dc)localStorage.setItem('bs:discord',dc);
-  updateDiscordLinks();
-  toast('Configuration sauvegardée !');
-}
-
-function loadConfig(){
-  document.getElementById('cfgGistId').value=localStorage.getItem('bs:gistId')||'';
-  document.getElementById('cfgToken').value=localStorage.getItem('bs:gistTok')?'••••••••••':'';
-  document.getElementById('cfgTg').value=localStorage.getItem('bs:telegram')||'';
-  document.getElementById('cfgDc').value=localStorage.getItem('bs:discord')||'';
-}
+function saveConfig(){}
+function loadConfig(){}
 
 function updateDiscordLinks(){
   const dc=getDc(),tg=getTg();
@@ -810,16 +789,22 @@ const AD_CFG={
   abo:{icon:'🔥📺🏆',title:'Accès <span style="color:var(--red)">ILLIMITÉ</span><br>à l\'IPTV',sub:'Chaînes · Films · Séries',btn:'🚀 S\'abonner maintenant',color:'var(--red)',action:()=>go('pg-access')}
 };
 
-function triggerAd(type){
+async function triggerAd(type){
+  // Save to gist so all visitors see it
   localStorage.setItem('bs:ad',type);
+  const data={progs,discord:getDc(),telegram:getTg(),liveChannel:JSON.parse(localStorage.getItem('bs:live')||'null'),activeAd:type};
+  await gistSave(data);
   showAdType(type);
-  toast('Popup "'+type+'" activée !');
+  toast('🎯 Popup "'+type+'" envoyée à tous les visiteurs !');
 }
 
-function stopAd(){
+async function stopAd(){
   localStorage.removeItem('bs:ad');
+  // Save to gist with no activeAd
+  const data={progs,discord:getDc(),telegram:getTg(),liveChannel:JSON.parse(localStorage.getItem('bs:live')||'null'),activeAd:null};
+  await gistSave(data);
   closeAd();
-  toast('Popup désactivée');
+  toast('⛔ Popup désactivée pour tous');
 }
 
 function showAdType(type){
@@ -938,6 +923,24 @@ window.addEventListener('load',()=>{
   localStorage.setItem('bs:telegram','https://t.me/bsport12');
   updateDiscordLinks();
   initSplash();
+  // Poll every 20s for admin changes (popup, live channel)
+  setInterval(async()=>{
+    const remote=await gistLoad();
+    if(!remote)return;
+    if(remote.activeAd){
+      const last=localStorage.getItem('bs:lastAd');
+      if(last!==remote.activeAd){
+        localStorage.setItem('bs:lastAd',remote.activeAd);
+        showAdType(remote.activeAd);
+      }
+    } else {
+      localStorage.removeItem('bs:lastAd');
+    }
+    if(remote.liveChannel){
+      localStorage.setItem('bs:live',JSON.stringify(remote.liveChannel));
+      showLiveBanner();
+    }
+  }, 20000);
 });
 </script>
 </body>
