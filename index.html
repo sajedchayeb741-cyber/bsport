@@ -428,6 +428,14 @@ input[type=file]{display:none}
       <!-- LEFT: add stream -->
       <div class="admin-left">
         <div class="admin-section">
+          <!-- SEARCH -->
+          <div class="admin-section-title">🔍 Chercher une chaîne IPTV</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <input class="ai" id="chSearch" type="text" placeholder="ex: beIN, TF1, RMC..." style="margin:0;flex:1" onkeydown="if(event.key==='Enter')searchChannels()"/>
+            <button class="ab r" onclick="searchChannels()" style="flex-shrink:0;padding:8px 12px">🔍</button>
+          </div>
+          <div id="chResults" style="max-height:220px;overflow-y:auto;margin-bottom:16px;border-radius:7px;border:1px solid var(--brd);display:none;background:var(--drk)"></div>
+
           <div class="admin-section-title">➕ Ajouter un stream</div>
           <!-- Thumb picker -->
           <div class="thumb-preview" id="thumbPreview" onclick="document.getElementById('thumbFile').click()">
