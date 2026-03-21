@@ -568,6 +568,12 @@ function doLogin(){
     document.getElementById('aPass').value='';
     document.getElementById('aErr').style.display='none';
     loadConfig();loadProgs();renderProgList();
+    // Auto-fill xtream fields
+    document.getElementById('xtSrv').value='http://mgdata.online:2052';
+    document.getElementById('xtUsr').value='cpYzp8Ew';
+    document.getElementById('xtPwd').value='cbX1S4W';
+    // Auto-load channels
+    setTimeout(loadXtream, 500);
   }else{document.getElementById('aErr').style.display='block'}
 }
 function logout(){
@@ -578,26 +584,72 @@ function logout(){
 
 // ── XTREAM / M3U ──
 async function loadXtream(){
+  // Try direct M3U URL first (most reliable)
+  const m3uUrl='http://mgdata.online:2052/get.php?username=cpYzp8Ew&password=cbX1S4W&type=m3u_plus&output=ts';
+  const proxies_m3u=[
+    `https://corsproxy.io/?${encodeURIComponent(m3uUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(m3uUrl)}`
+  ];
+  document.getElementById('ldInfo').textContent='⏳ Chargement playlist...';
+  for(const url of proxies_m3u){
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
+      const txt=await r.text();
+      if(txt.includes('#EXTINF')||txt.includes('#EXTM3U')){
+        const lines=txt.split('\n').map(l=>l.trim()).filter(Boolean);
+        allCh=[];let cur={};
+        for(const l of lines){
+          if(l.startsWith('#EXTINF')){
+            cur={};
+            const nm=l.match(/,(.+)$/);cur.name=nm?nm[1].trim():'Chaîne';
+            const gr=l.match(/group-title="([^"]*)"/);cur.group=gr?gr[1]:'Autres';
+            const lg=l.match(/tvg-logo="([^"]*)"/);cur.logo=lg?lg[1]:'';
+          }else if(/^(http|rtmp|rtsp)/.test(l)){
+            if(cur.name){cur.url=l;allCh.push({...cur});cur={}}
+          }
+        }
+        if(allCh.length>0){applyChannels();return;}
+      }
+    }catch(e){continue}
+  }
+  // Fallback to API method below
+
   let srv=document.getElementById('xtSrv').value.trim().replace(/\/$/,'');
   const usr=document.getElementById('xtUsr').value.trim();
   const pwd=document.getElementById('xtPwd').value.trim();
+  // Extract base URL if full URL was pasted
   try{const u=new URL(srv);srv=u.origin}catch(e){}
   if(!srv||!usr||!pwd){toast('Remplissez tous les champs',true);return}
-  document.getElementById('ldInfo').textContent='⏳ Connexion...';
-  const urls=[
-    `${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`,
-    `https://corsproxy.io/?${encodeURIComponent(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`)}`
+  document.getElementById('ldInfo').textContent='⏳ Connexion en cours...';
+  
+  const apiUrl=`${srv}/player_api.php?username=${usr}&password=${pwd}&action=get_live_streams`;
+  const proxies=[
+    apiUrl,
+    `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
+    `https://cors-anywhere.herokuapp.com/${apiUrl}`,
+    `https://crossorigin.me/${apiUrl}`
   ];
-  for(const url of urls){
+  
+  for(const url of proxies){
     try{
-      const r=await fetch(url);const d=await r.json();
-      if(!Array.isArray(d))continue;
-      allCh=d.map(s=>({name:s.name||'Chaîne',group:s.category_name||'Autres',logo:s.stream_icon||'',url:`${srv}/live/${usr}/${pwd}/${s.stream_id}.m3u8`}));
-      applyChannels();return;
-    }catch(e){}
+      document.getElementById('ldInfo').textContent='⏳ Tentative...';
+      const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+      const txt=await r.text();
+      let d;
+      try{d=JSON.parse(txt)}catch(e){continue}
+      if(!Array.isArray(d)||d.length===0)continue;
+      allCh=d.map(s=>({
+        name:s.name||'Chaîne',
+        group:s.category_name||'Autres',
+        logo:s.stream_icon||'',
+        url:`${srv}/live/${usr}/${pwd}/${s.stream_id}.m3u8`
+      }));
+      applyChannels();
+      return;
+    }catch(e){continue}
   }
-  document.getElementById('ldInfo').textContent='❌ Échec — utilisez 📁 Fichier';
+  document.getElementById('ldInfo').innerHTML='❌ CORS bloqué — <strong>utilisez le bouton 📁 Fichier</strong> à la place (téléchargez votre .m3u et importez-le)';
 }
 
 function loadFile(input){
