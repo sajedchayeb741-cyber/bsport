@@ -267,6 +267,16 @@ input[type=file]{display:none}
       <h2>🔴 Programmes en direct</h2>
       <p>Choisissez le programme que vous souhaitez regarder</p>
     </div>
+    <!-- NOW LIVE FEATURED -->
+    <div id="nowLiveBanner" style="display:none;background:linear-gradient(135deg,#1a0005,#0d0d0d);border-bottom:2px solid var(--red);padding:16px 28px;display:none;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:800;letter-spacing:2px;padding:4px 10px;border-radius:3px;display:flex;align-items:center;gap:5px;animation:subPulse 2s infinite">
+          <div style="width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.4s infinite"></div>LIVE MAINTENANT
+        </div>
+        <div id="nowLiveName" style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:2px;text-transform:uppercase"></div>
+      </div>
+      <button onclick="watchLive()" style="background:var(--red);color:#fff;border:none;padding:10px 24px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-left:auto">▶ Regarder maintenant</button>
+    </div>
     <div id="programsGrid" class="programs-grid"></div>
   </div>
 
@@ -623,6 +633,20 @@ function toast(msg, err=false) {
 
 // ─── STORAGE ───
 // ─── GITHUB GIST BACKEND ───
+// ─── LIVE CHANNEL (shared via Gist) ───
+async function setLiveChannel(name, url, thumb) {
+  const ch = { name, url, thumb: thumb || '' };
+  localStorage.setItem('bsport:liveChannel', JSON.stringify(ch));
+  await savePrograms(); // saves everything to Gist including liveChannel
+}
+
+function getLiveChannel() {
+  try {
+    const d = localStorage.getItem('bsport:liveChannel');
+    return d ? JSON.parse(d) : null;
+  } catch(e) { return null; }
+}
+
 function getGistConfig() {
   return {
     token: localStorage.getItem('bsport:gistToken') || '',
@@ -645,7 +669,12 @@ async function savePrograms() {
       body: JSON.stringify({
         files: {
           'bsport-data.json': {
-            content: JSON.stringify({ programs, discord: getDiscordLS(), telegram: localStorage.getItem('bsport:telegram') || '' })
+            content: JSON.stringify({
+              programs,
+              liveChannel: JSON.parse(localStorage.getItem('bsport:liveChannel') || 'null'),
+              discord: getDiscordLS(),
+              telegram: localStorage.getItem('bsport:telegram') || ''
+            })
           }
         }
       })
@@ -697,6 +726,7 @@ async function loadProgramsPublic() {
         if (parsed.programs) programs = parsed.programs;
         if (parsed.discord) saveDiscordLS(parsed.discord);
         if (parsed.telegram) localStorage.setItem('bsport:telegram', parsed.telegram);
+        if (parsed.liveChannel) localStorage.setItem('bsport:liveChannel', JSON.stringify(parsed.liveChannel));
         updateProgStats();
         renderGrid();
         return;
@@ -918,6 +948,7 @@ function refreshProgAdminList() {
         <div class="prog-admin-actions">
           <button class="btn-edit-name" onclick="renameProgram(${i})">✏ Renommer</button>
           <button class="btn-edit-name" onclick="editDesc(${i})">📝 Description</button>
+          <button class="btn-edit-name" style="border-color:var(--red);color:var(--red)" onclick="setAsLive(${i})">🔴 Mettre en live</button>
           <button class="btn-del" onclick="removeProgram(${i})">🗑 Retirer</button>
         </div>
       </div>
@@ -960,12 +991,34 @@ function renderPublicPrograms() {
   // async: loadProgramsPublic will call renderGrid when done
   loadProgramsPublic();
 }
+function watchLive() {
+  const ch = getLiveChannel();
+  if (!ch) return;
+  document.getElementById('pChName').textContent = ch.name;
+  document.getElementById('pStatus').textContent = 'Connexion établie';
+  go('page-player');
+  setTimeout(() => startPlayer(ch.url), 100);
+}
+
+function showNowLiveBanner() {
+  const ch = getLiveChannel();
+  const banner = document.getElementById('nowLiveBanner');
+  if (!banner) return;
+  if (ch && ch.url) {
+    banner.style.display = 'flex';
+    document.getElementById('nowLiveName').textContent = ch.name;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
 function renderGrid() {
   const grid = document.getElementById('programsGrid');
   if (!programs.length) {
     grid.innerHTML = `<div style="grid-column:1/-1"><div class="no-programs"><span>📡</span><p>Aucun programme en direct</p><small style="color:#444;font-size:.75rem">Revenez plus tard ou contactez-nous sur Discord</small></div></div>`;
     return;
   }
+  showNowLiveBanner();
   grid.innerHTML = programs.map((p,i) => `
     <div class="prog-card" onclick="watchProgram(${i})">
       <div class="prog-thumb">
@@ -982,6 +1035,13 @@ function renderGrid() {
 }
 
 // ─── WATCH ───
+async function setAsLive(idx) {
+  const p = programs[idx]; if (!p) return;
+  await setLiveChannel(p.name, p.url, p.thumb || '');
+  toast('🔴 "' + p.name + '" est maintenant en live pour tous les visiteurs !');
+  refreshProgAdminList();
+}
+
 function watchProgram(idx) {
   const p = programs[idx]; if (!p) return;
   currentProgIdx = idx;
