@@ -308,6 +308,9 @@ input[type=file]{display:none}
     <div class="abar">
       <div class="abar-t">🎛 Panneau admin</div>
       <button class="ab g" onclick="go('pg-home')">👁 Site</button>
+      <span style="color:var(--mut);font-size:.72rem;font-weight:600">PROXY:</span>
+      <input class="ainp" id="proxyBase" type="text" placeholder="https://votre-proxy.tld" style="margin:0;max-width:280px" onkeydown="if(event.key==='Enter')saveProxyFromUi()"/>
+      <button class="ab g" onclick="saveProxyFromUi()">💾</button>
       <span style="color:var(--mut);font-size:.72rem;font-weight:600">POPUP:</span>
       <button class="ab blue" onclick="triggerPopup('discord')">💬 Discord</button>
       <button class="ab tgb" onclick="triggerPopup('telegram')">📲 Telegram</button>
@@ -347,7 +350,7 @@ input[type=file]{display:none}
 <script>
 
 const PASS = "bsport2025";
-const WORKER = "https://bsport-proxy.sajedchayeb741.workers.dev";
+const DEFAULT_WORKER = "https://bsport-proxy.sajedchayeb741.workers.dev";
 const USR = "gus0MDKM";
 const PWD = "eTNXPQY";
 const DISCORD = "https://discord.gg/FABHWRfX";
@@ -360,12 +363,33 @@ let streams=[], allCh=[], hlsI=null, logoClicks=0, logoTimer=null, popTimer=null
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
 
+function getWorkerBase(){
+  const v=(localStorage.getItem('bs:worker')||'').trim();
+  return (v||DEFAULT_WORKER).replace(/\/+$/,'');
+}
+function setWorkerBase(v){
+  const clean=String(v||'').trim().replace(/\/+$/,'');
+  if(!clean){localStorage.removeItem('bs:worker');return DEFAULT_WORKER}
+  localStorage.setItem('bs:worker',clean);
+  return clean;
+}
+function migrateStreamUrls(fromBase,toBase){
+  if(!fromBase||!toBase||fromBase===toBase) return;
+  const from=String(fromBase).replace(/\/+$/,'');
+  const to=String(toBase).replace(/\/+$/,'');
+  streams=streams.map(s=>{
+    if(!s||!s.url||typeof s.url!=='string') return s;
+    if(s.url.startsWith(from+'/')) return {...s,url:to+s.url.slice(from.length)};
+    return s;
+  });
+}
+
 function go(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
   if(id==='pg-home')loadPublic();
-  if(id==='pg-admin'){loadStreams();renderStreamList()}
+  if(id==='pg-admin'){loadStreams();syncProxyUi();renderStreamList()}
 }
 
 document.getElementById('secretLogo').addEventListener('click',()=>{
@@ -395,6 +419,13 @@ async function gistLoad(){
 
 function loadStreams(){
   try{const d=localStorage.getItem('bs:streams');if(d)streams=JSON.parse(d)}catch(e){streams=[]}
+  try{
+    const last=localStorage.getItem('bs:lastWorker')||DEFAULT_WORKER;
+    const now=getWorkerBase();
+    migrateStreamUrls(last,now);
+    localStorage.setItem('bs:lastWorker',now);
+    localStorage.setItem('bs:streams',JSON.stringify(streams));
+  }catch(e){}
   updateStats();
 }
 async function saveStreams(){
@@ -411,6 +442,12 @@ async function loadPublic(){
   const remote=await gistLoad();
   if(remote&&remote.streams){
     streams=remote.streams;
+    try{
+      const last=localStorage.getItem('bs:lastWorker')||DEFAULT_WORKER;
+      const now=getWorkerBase();
+      migrateStreamUrls(last,now);
+      localStorage.setItem('bs:lastWorker',now);
+    }catch(e){}
     localStorage.setItem('bs:streams',JSON.stringify(streams));
     if(remote.activePopup){
       const last=localStorage.getItem('bs:lastPop');
@@ -453,7 +490,7 @@ function startPlayer(url){
     hlsI=new Hls({enableWorker:true,lowLatencyMode:true});
     hlsI.loadSource(src);hlsI.attachMedia(v);
     hlsI.on(Hls.Events.MANIFEST_PARSED,()=>{v.play().catch(()=>{});lo.classList.add('show');document.getElementById('plStatus').textContent='En direct'});
-    hlsI.on(Hls.Events.ERROR,(_,d)=>{if(d.fatal){hlsI.destroy();if(!fb)tryPlay(src.replace('.m3u8','.ts'),true);else{ph.style.display='flex';ph.querySelector('p').textContent='⚠ Flux indisponible';v.style.display='none'}}});
+    hlsI.on(Hls.Events.ERROR,(_,d)=>{if(d.fatal){hlsI.destroy();ph.style.display='flex';ph.querySelector('p').textContent='⚠ Flux indisponible';v.style.display='none'}});
   }
   tryPlay(url,false);
 }
@@ -483,7 +520,8 @@ async function searchCh(){
     info.textContent='⏳ Chargement des chaînes...';
     list.innerHTML='<div style="padding:20px;text-align:center;color:var(--mut);font-size:.78rem">⏳ Connexion au serveur IPTV...</div>';
     try{
-      const r=await fetch(`${WORKER}/player_api.php?username=${USR}&password=${PWD}&action=get_live_streams`);
+      const wb=getWorkerBase();
+      const r=await fetch(`${wb}/player_api.php?username=${USR}&password=${PWD}&action=get_live_streams`);
       const data=await r.json();
       if(Array.isArray(data)&&data.length>0){
         allCh=data;
@@ -495,8 +533,9 @@ async function searchCh(){
   const results=allCh.filter(c=>c.name.toLowerCase().includes(q)).slice(0,50);
   if(!results.length){list.innerHTML=`<div style="padding:20px;text-align:center;color:var(--mut);font-size:.78rem">Aucun résultat pour "${q}"</div>`;return}
   const activeUrls=new Set(streams.map(s=>s.url));
+  const wb=getWorkerBase();
   list.innerHTML=results.map(c=>{
-    const url=`${WORKER}/live/${USR}/${PWD}/${c.stream_id}.m3u8`;
+    const url=`${wb}/live/${USR}/${PWD}/${c.stream_id}.m3u8`;
     const isAdded=activeUrls.has(url);
     return `<div class="ch-item">
       <div class="ch-logo">${c.stream_icon?`<img src="${esc(c.stream_icon)}" onerror="this.style.display='none'" alt="">`:'📺'}</div>
@@ -512,13 +551,32 @@ async function searchCh(){
 }
 
 async function diffuser(id,name,cat,logo){
-  const url=`${WORKER}/live/${USR}/${PWD}/${id}.m3u8`;
+  const wb=getWorkerBase();
+  const url=`${wb}/live/${USR}/${PWD}/${id}.m3u8`;
   if(streams.find(s=>s.url===url)){toast('Déjà diffusé !',true);return}
   streams.push({id:Date.now(),name,url,cat,thumb:logo});
   await saveStreams();
   renderStreamList();
   searchCh();
   toast(`🔴 "${name}" diffusé !`);
+}
+
+function syncProxyUi(){
+  const i=document.getElementById('proxyBase');
+  if(i) i.value=getWorkerBase();
+}
+function saveProxyFromUi(){
+  const i=document.getElementById('proxyBase');
+  const prev=getWorkerBase();
+  const next=setWorkerBase(i?i.value:'');
+  if(next!==prev){
+    migrateStreamUrls(prev,next);
+    localStorage.setItem('bs:lastWorker',next);
+    localStorage.setItem('bs:streams',JSON.stringify(streams));
+    gistSave({streams,activePopup:localStorage.getItem('bs:popup')||null}).catch(()=>{});
+    renderPublic();renderStreamList();searchCh();
+    toast('✅ Proxy mis à jour');
+  }else toast('Proxy inchangé');
 }
 
 function removeStream(id){
