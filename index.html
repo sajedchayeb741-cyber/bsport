@@ -542,7 +542,18 @@ function startPlayer(url){
     return;
   }
 
-  hlsI=new Hls({enableWorker:true,lowLatencyMode:true});
+  st.textContent='Connexion... (peut prendre 10-20s)';
+  hlsI=new Hls({
+    enableWorker:true,
+    lowLatencyMode:false,
+    manifestLoadingTimeOut:30000,
+    manifestLoadingMaxRetry:5,
+    manifestLoadingRetryDelay:2000,
+    levelLoadingTimeOut:30000,
+    levelLoadingMaxRetry:5,
+    fragLoadingTimeOut:30000,
+    fragLoadingMaxRetry:5,
+  });
   hlsI.loadSource(url);
   hlsI.attachMedia(v);
   hlsI.on(Hls.Events.MANIFEST_PARSED,()=>{
@@ -551,13 +562,14 @@ function startPlayer(url){
     st.textContent='En direct ✅';
   });
   hlsI.on(Hls.Events.ERROR,(_,d)=>{
+    console.warn('HLS error',d.type,d.details,d.fatal);
     if(d.fatal){
       hlsI.destroy(); hlsI=null;
       ph.style.display='flex';
       ph.querySelector('p').textContent='⚠ Flux indisponible';
       v.style.display='none';
       st.textContent='Erreur de lecture';
-      toast('⚠ Flux indisponible. Worker configuré ?',true);
+      toast('⚠ Flux indisponible',true);
     }
   });
 }
