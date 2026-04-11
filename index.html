@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>BSPORT — Live</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
 <style>
 :root{--red:#E8001E;--rdd:#b5001a;--blk:#0a0a0a;--drk:#111;--crd:#1a1a1a;--brd:#252525;--txt:#f0f0f0;--mut:#777;--dsc:#5865F2;--grn:#00c853;--tg:#29b6f6}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -56,9 +57,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px
 .pstatus{font-size:.78rem;color:var(--mut);margin-bottom:16px}
 .pvid-wrap{width:100%;background:#000;border-radius:11px;overflow:hidden;border:1px solid var(--brd);position:relative;aspect-ratio:16/9}
 .pvid-wrap video{width:100%;height:100%;display:block}
-.pph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mut);gap:10px}
+.pph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mut);gap:10px;z-index:5}
 .pph span{font-size:2.8rem}.pph p{font-size:.88rem;font-weight:600}
-.plive{position:absolute;bottom:12px;left:12px;background:var(--red);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:2px;padding:4px 10px;border-radius:4px;display:none;align-items:center;gap:5px}
+.plive{position:absolute;bottom:12px;left:12px;background:var(--red);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:2px;padding:4px 10px;border-radius:4px;display:none;align-items:center;gap:5px;z-index:10}
 .plive.show{display:flex}
 .acc-inner{flex:1;max-width:880px;margin:0 auto;padding:44px 22px;width:100%}
 .acc-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:3px;margin-bottom:6px}
@@ -102,40 +103,22 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px
 .ab.org{background:transparent;border:1px solid #ff9800;color:#ff9800}
 .ab.stop{background:transparent;border:1px solid var(--brd);color:var(--mut)}.ab.stop:hover{border-color:#f44;color:#f44}
 .admin-cols{flex:1;display:flex;min-height:0}
-.acol-left{width:380px;min-width:280px;border-right:1px solid var(--brd);display:flex;flex-direction:column;background:var(--drk)}
-.acol-sec{padding:14px;border-bottom:1px solid var(--brd)}
-.acol-title{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:10px}
-.ainp{width:100%;background:var(--crd);border:1px solid var(--brd);color:var(--txt);padding:8px 11px;border-radius:7px;font-family:'Inter',sans-serif;font-size:.8rem;outline:none;transition:border-color .2s;margin-bottom:6px}
-.ainp:focus{border-color:var(--red)}
-.cfg-row{display:grid;grid-template-columns:75px 1fr;gap:6px;align-items:center;margin-bottom:7px}
-.cfg-row label{font-size:.72rem;color:var(--mut)}
-.cfg-row input{background:var(--blk);border:1px solid var(--brd);color:var(--txt);padding:7px 10px;border-radius:6px;font-family:'Inter',sans-serif;font-size:.78rem;outline:none;width:100%}
-.cfg-row input:focus{border-color:var(--red)}
-.ch-list{flex:1;overflow-y:auto}
-.ch-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-bottom:1px solid #1c1c1c;transition:background .15s}
-.ch-item:hover{background:rgba(232,0,30,.05)}
-.ch-logo{width:34px;height:34px;border-radius:5px;background:var(--crd);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;overflow:hidden}
-.ch-logo img{width:100%;height:100%;object-fit:contain}
-.ch-info{flex:1;min-width:0}
-.ch-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ch-grp{font-size:.67rem;color:var(--mut)}
-.ch-add{padding:5px 11px;background:var(--red);color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:700;transition:all .2s;white-space:nowrap;flex-shrink:0}
-.ch-add:hover{background:var(--rdd)}.ch-add.added{background:var(--grn);color:#000;cursor:default}
+.acol-left{width:340px;min-width:280px;border-right:1px solid var(--brd);display:flex;flex-direction:column;background:var(--drk);padding:18px}
+.acol-title{font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
 .acol-right{flex:1;padding:20px;overflow-y:auto}
 .stats{display:flex;gap:9px;margin-bottom:18px}
 .stat{flex:1;background:var(--crd);border:1px solid var(--brd);border-radius:9px;padding:11px;text-align:center}
 .snum{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;color:var(--red)}
 .slbl{font-size:.66rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
 .stream-list{display:flex;flex-direction:column;gap:10px}
-.sc{background:var(--crd);border:1px solid var(--brd);border-radius:9px;padding:12px;display:flex;gap:10px;align-items:center}
-.sc-thumb{width:56px;height:56px;background:#000;border-radius:6px;overflow:hidden;flex-shrink:0;border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-.sc-thumb img{width:100%;height:100%;object-fit:contain}
-.sc-info{flex:1;min-width:0}
-.sc-name{font-size:.88rem;font-weight:700;margin-bottom:2px}
-.sc-url{font-size:.65rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px}
+.sc{background:var(--crd);border:1px solid var(--brd);border-radius:9px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.sc-name{font-size:.92rem;font-weight:700}
+.sc-url{font-size:.65rem;color:var(--mut);word-break:break-all}
 .sc-acts{display:flex;gap:5px}
-.sca{padding:3px 9px;background:transparent;border:1px solid var(--brd);color:var(--mut);border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.66rem;font-weight:600;transition:all .2s}
+.sca{padding:4px 11px;background:transparent;border:1px solid var(--brd);color:var(--mut);border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;transition:all .2s}
 .sca:hover{border-color:var(--txt);color:var(--txt)}.sca.del:hover{border-color:#f44;color:#f44}
+.ainp{width:100%;background:var(--crd);border:1px solid var(--brd);color:var(--txt);padding:8px 11px;border-radius:7px;font-family:'Inter',sans-serif;font-size:.8rem;outline:none;transition:border-color .2s;margin-bottom:8px}
+.ainp:focus{border-color:var(--red)}
 #popup{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(8px)}
 .pbox-pop{background:linear-gradient(135deg,#0d0d0d,#1a0005);border:1px solid var(--red);border-radius:14px;max-width:410px;width:90%;padding:30px 24px;text-align:center;position:relative}
 .pclosebtn{position:absolute;top:11px;right:13px;background:rgba(255,255,255,.05);border:1px solid var(--brd);color:var(--mut);border-radius:50%;width:29px;height:29px;cursor:not-allowed;font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:'Inter',sans-serif}
@@ -160,10 +143,15 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px
 .toast.show{opacity:1;transform:translateY(0)}.toast.err{background:var(--red);color:#fff}
 footer{text-align:center;padding:18px;border-top:1px solid var(--brd);font-size:.7rem;color:var(--mut)}
 footer span{color:var(--red)}
+.obs-info{background:var(--crd);border:1px solid var(--brd);border-radius:9px;padding:14px;margin-bottom:14px;font-size:.78rem;line-height:1.8}
+.obs-info b{color:var(--red)}
+.obs-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:700;margin-bottom:12px}
+.obs-status.live{background:rgba(232,0,30,.15);border:1px solid var(--red);color:var(--red)}
+.obs-status.offline{background:var(--crd);border:1px solid var(--brd);color:var(--mut)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(232,0,30,.4)}60%{box-shadow:0 0 0 10px rgba(232,0,30,0)}}
-@media(max-width:700px){.admin-cols{flex-direction:column}.acol-left{width:100%;border-right:none;border-bottom:1px solid var(--brd);max-height:55vh}}
+@media(max-width:700px){.admin-cols{flex-direction:column}.acol-left{width:100%;border-right:none;border-bottom:1px solid var(--brd)}}
 </style>
 </head>
 <body>
@@ -242,7 +230,7 @@ footer span{color:var(--red)}
     <div class="pstatus" id="plStatus">Connexion...</div>
     <div class="pvid-wrap">
       <div class="pph" id="pph"><span>📡</span><p>Chargement...</p></div>
-      <video id="vid" controls playsinline style="display:none;width:100%;height:100%"></video>
+      <video id="vid" controls playsinline style="width:100%;height:100%;display:none"></video>
       <div class="plive" id="plive"><div style="width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.4s infinite"></div>LIVE</div>
     </div>
   </div>
@@ -305,146 +293,70 @@ footer span{color:var(--red)}
       <button class="ab g" onclick="resetSplash()">🔄 Splash</button>
     </div>
     <div class="admin-cols">
-
-      <!-- ── COLONNE GAUCHE ── -->
+      <!-- GAUCHE : config OBS + streams -->
       <div class="acol-left">
-
-        <!-- Config Worker -->
-        <div class="acol-sec">
-          <div class="acol-title">⚙️ Config Worker Cloudflare</div>
-          <div class="cfg-row"><label>Worker URL</label><input id="cfgWorker" type="text" placeholder="https://xxx.workers.dev"/></div>
-          <div class="cfg-row"><label>Username</label><input id="cfgUsr" type="text"/></div>
-          <div class="cfg-row"><label>Password</label><input id="cfgPwd" type="text"/></div>
-          <button class="ab r" style="width:100%;margin-top:4px" onclick="saveConfig()">💾 Sauvegarder</button>
-          <div id="cfgInfo" style="font-size:.7rem;color:var(--grn);margin-top:6px;text-align:center;min-height:16px"></div>
+        <div class="acol-title">📡 Config OBS</div>
+        <div class="obs-info">
+          <b>Serveur RTMP :</b> rtmp://207.180.211.77/live<br>
+          <b>Clé de stream :</b> bsport (ou autre nom)<br><br>
+          Dans OBS : Paramètres → Diffusion → Personnalisé
         </div>
 
-        <!-- Recherche chaîne -->
-        <div class="acol-sec">
-          <div class="acol-title">🔍 Rechercher une chaîne</div>
-          <div style="display:flex;gap:6px">
-            <input class="ainp" id="chSrch" type="text" placeholder="beIN, TF1, RMC, Canal..." style="margin:0;flex:1" onkeydown="if(event.key==='Enter')searchCh()"/>
-            <button class="ab r" onclick="searchCh()" style="padding:8px 12px">🔍</button>
-          </div>
-          <div id="loadInfo" style="font-size:.72rem;color:var(--mut);margin-top:5px;min-height:16px"></div>
-        </div>
+        <div class="acol-title">➕ Ajouter un stream</div>
+        <input class="ainp" id="newName" type="text" placeholder="Nom (ex: beIN Sports 1)"/>
+        <input class="ainp" id="newKey" type="text" placeholder="Clé OBS (ex: bsport)"/>
+        <input class="ainp" id="newThumb" type="text" placeholder="URL logo (optionnel)"/>
+        <button class="ab r" style="width:100%" onclick="addStream()">➕ Ajouter</button>
 
-        <div class="ch-list" id="chList">
-          <div style="padding:28px;text-align:center;color:var(--mut);font-size:.8rem;line-height:1.7">
-            1️⃣ Configure le Worker<br>2️⃣ Cherche une chaîne<br>3️⃣ Clique Diffuser
+        <div style="margin-top:16px">
+          <div class="acol-title">POPUP:</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="ab blue" onclick="triggerPopup('discord')" style="width:100%">💬 Popup Discord</button>
+            <button class="ab tgb" onclick="triggerPopup('telegram')" style="width:100%">📲 Popup Telegram</button>
+            <button class="ab org" onclick="triggerPopup('abo')" style="width:100%">🔥 Popup Abo</button>
+            <button class="ab stop" onclick="stopPopup()" style="width:100%">⛔ Stop popup</button>
           </div>
         </div>
       </div>
 
-      <!-- ── COLONNE DROITE ── -->
+      <!-- DROITE : liste streams -->
       <div class="acol-right">
         <div class="stats">
           <div class="stat"><div class="snum" id="stCount">0</div><div class="slbl">Streams actifs</div></div>
-          <div class="stat"><div class="snum" id="stCh">—</div><div class="slbl">Chaînes dispo</div></div>
+          <div class="stat"><div id="obsStatusEl" class="obs-status offline"><div style="width:6px;height:6px;border-radius:50%;background:currentColor"></div>OBS</div></div>
         </div>
-        <div class="acol-title" style="margin-bottom:12px">📺 Streams actuellement diffusés</div>
+        <div class="acol-title" style="margin-bottom:12px">📺 Streams diffusés</div>
         <div id="streamList" class="stream-list">
-          <div style="padding:28px;text-align:center;color:var(--mut);font-size:.8rem;border:1px dashed var(--brd);border-radius:9px">Aucun stream actif</div>
+          <div style="padding:28px;text-align:center;color:var(--mut);font-size:.8rem;border:1px dashed var(--brd);border-radius:9px">Aucun stream — Lance OBS et ajoute un stream</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.10/hls.min.js"></script>
 <script>
-// ══════════════════════════════════════════════
-//  CONFIG — modifiable dans l'admin
-// ══════════════════════════════════════════════
 const PASS     = "bsport2025";
 const DISCORD  = "https://discord.gg/FABHWRfX";
 const TELEGRAM = "https://t.me/bsport12";
+const VPS      = "https://lbshop.store";
 
-// Valeurs par défaut (ton nouveau compte)
-let CFG = {
-  worker : "",          // URL du Worker Cloudflare (à remplir dans l'admin)
-  usr    : "z61pB866",
-  pwd    : "w9ratkx"
-};
+function hlsUrl(key){ return `${VPS}/hls/${key}.m3u8`; }
 
-// Fonctions d'URL (tout passe par le Worker)
-const apiUrl  = (action) => `${CFG.worker}/player_api.php?username=${CFG.usr}&password=${CFG.pwd}&action=${action}`;
-const streamUrl = (id)   => `${CFG.worker}/live/${CFG.usr}/${CFG.pwd}/${id}.m3u8`;
-
-// ══════════════════════════════════════════════
-//  GIST GITHUB — sync entre visiteurs
-// ══════════════════════════════════════════════
 function _gi(){return atob(['YThjN2U5Yjc','2YzkxYzY3OD','Y5YjkzZDUyZ','TY3MWI3NGY='].join(''))}
 function _gt(){return atob(['Z2hwXzJIcVBDQj','JqakROcnpDWFNX','V08wazhTQmlBdz','NkUzFBdDFrRg=='].join(''))}
 
-async function gistSave(data){
-  try{
-    await fetch(`https://api.github.com/gists/${_gi()}`,{
-      method:'PATCH',
-      headers:{'Authorization':'token '+_gt(),'Content-Type':'application/json'},
-      body:JSON.stringify({files:{'bsport-data.json':{content:JSON.stringify(data)}}})
-    });
-  }catch(e){}
-}
-async function gistLoad(){
-  try{
-    const r=await fetch(`https://api.github.com/gists/${_gi()}`);
-    const d=await r.json();
-    const f=d.files&&d.files['bsport-data.json'];
-    if(f&&f.content)return JSON.parse(f.content);
-  }catch(e){}
-  return null;
-}
-
-// ══════════════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════════════
-let streams=[], allCh=[], hlsI=null, logoClicks=0, logoTimer=null, popTimer=null, splashTimer=null;
+let streams=[], hlsI=null, logoClicks=0, logoTimer=null, popTimer=null, splashTimer=null;
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function toast(m,e=false){
-  const t=document.getElementById('toast');
-  t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2800);
-}
+function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
 
-// ══════════════════════════════════════════════
-//  CONFIG ADMIN
-// ══════════════════════════════════════════════
-function loadConfig(){
-  try{
-    const c=JSON.parse(localStorage.getItem('bs:cfg')||'{}');
-    if(c.worker) CFG.worker=c.worker;
-    if(c.usr)    CFG.usr=c.usr;
-    if(c.pwd)    CFG.pwd=c.pwd;
-  }catch(e){}
-}
-function saveConfig(){
-  CFG.worker=document.getElementById('cfgWorker').value.trim().replace(/\/+$/,'');
-  CFG.usr   =document.getElementById('cfgUsr').value.trim();
-  CFG.pwd   =document.getElementById('cfgPwd').value.trim();
-  localStorage.setItem('bs:cfg',JSON.stringify(CFG));
-  allCh=[];
-  const info=document.getElementById('cfgInfo');
-  info.textContent='✅ Sauvegardé !';
-  setTimeout(()=>info.textContent='',2500);
-  toast('✅ Config sauvegardée !');
-}
-function fillConfigFields(){
-  document.getElementById('cfgWorker').value=CFG.worker;
-  document.getElementById('cfgUsr').value   =CFG.usr;
-  document.getElementById('cfgPwd').value   =CFG.pwd;
-}
-
-// ══════════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════════
 function go(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
-  if(id==='pg-home') loadPublic();
-  if(id==='pg-admin'){fillConfigFields();loadStreams();renderStreamList()}
+  if(id==='pg-home')loadPublic();
+  if(id==='pg-admin'){loadStreams();renderStreamList();checkOBS();}
+  if(id!=='pg-player'&&hlsI){try{hlsI.destroy();hlsI=null}catch(e){}}
 }
 
 document.getElementById('secretLogo').addEventListener('click',()=>{
@@ -453,9 +365,16 @@ document.getElementById('secretLogo').addEventListener('click',()=>{
   if(logoClicks>=5){logoClicks=0;go('pg-admin')}
 });
 
-// ══════════════════════════════════════════════
-//  STREAMS
-// ══════════════════════════════════════════════
+// ── GIST ─────────────────────────────────────────────────
+async function gistSave(data){
+  try{await fetch(`https://api.github.com/gists/${_gi()}`,{method:'PATCH',headers:{'Authorization':'token '+_gt(),'Content-Type':'application/json'},body:JSON.stringify({files:{'bsport-data.json':{content:JSON.stringify(data)}}})})}catch(e){}
+}
+async function gistLoad(){
+  try{const r=await fetch(`https://api.github.com/gists/${_gi()}`);const d=await r.json();const f=d.files&&d.files['bsport-data.json'];if(f&&f.content)return JSON.parse(f.content);}catch(e){}
+  return null;
+}
+
+// ── STREAMS ──────────────────────────────────────────────
 function loadStreams(){
   try{const d=localStorage.getItem('bs:streams');if(d)streams=JSON.parse(d)}catch(e){streams=[]}
   updateStats();
@@ -466,22 +385,46 @@ async function saveStreams(){
   await gistSave({streams,activePopup:localStorage.getItem('bs:popup')||null});
   toast('✅ Synchronisé !');
 }
-function updateStats(){
-  const e=document.getElementById('stCount');if(e)e.textContent=streams.length;
+function updateStats(){const e=document.getElementById('stCount');if(e)e.textContent=streams.length;}
+
+function addStream(){
+  const name=document.getElementById('newName').value.trim();
+  const key =document.getElementById('newKey').value.trim();
+  const thumb=document.getElementById('newThumb').value.trim();
+  if(!name||!key){toast('Nom et clé OBS requis',true);return}
+  const url=hlsUrl(key);
+  if(streams.find(s=>s.url===url)){toast('Déjà ajouté !',true);return}
+  streams.push({id:Date.now(),name,url,cat:'Sport',thumb,key});
+  document.getElementById('newName').value='';
+  document.getElementById('newKey').value='';
+  document.getElementById('newThumb').value='';
+  saveStreams();renderStreamList();
+  toast(`✅ "${name}" ajouté !`);
+}
+
+function removeStream(id){streams=streams.filter(s=>s.id!==id);saveStreams();renderStreamList();}
+
+function renderStreamList(){
+  const el=document.getElementById('streamList');if(!el)return;
+  document.getElementById('stCount').textContent=streams.length;
+  if(!streams.length){el.innerHTML='<div style="padding:28px;text-align:center;color:var(--mut);font-size:.8rem;border:1px dashed var(--brd);border-radius:9px">Lance OBS et ajoute un stream</div>';return}
+  el.innerHTML=streams.map(s=>`
+    <div class="sc">
+      <div class="sc-name">${esc(s.name)}</div>
+      <div class="sc-url">${esc(s.url)}</div>
+      <div class="sc-acts">
+        <button class="sca" onclick="watchStream('${esc(s.url)}','${esc(s.name)}')">▶ Tester</button>
+        <button class="sca del" onclick="removeStream(${s.id})">🗑 Retirer</button>
+      </div>
+    </div>`).join('');
 }
 
 async function loadPublic(){
   const remote=await gistLoad();
   if(remote&&remote.streams){
-    streams=remote.streams;
-    localStorage.setItem('bs:streams',JSON.stringify(streams));
-    if(remote.activePopup){
-      const last=localStorage.getItem('bs:lastPop');
-      if(last!==remote.activePopup){
-        localStorage.setItem('bs:lastPop',remote.activePopup);
-        setTimeout(()=>showPopupType(remote.activePopup),600);
-      }
-    }else localStorage.removeItem('bs:lastPop');
+    streams=remote.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));
+    if(remote.activePopup){const last=localStorage.getItem('bs:lastPop');if(last!==remote.activePopup){localStorage.setItem('bs:lastPop',remote.activePopup);setTimeout(()=>showPopupType(remote.activePopup),600)}}
+    else localStorage.removeItem('bs:lastPop');
   }else loadStreams();
   renderPublic();
 }
@@ -490,34 +433,25 @@ function renderPublic(){
   const grid=document.getElementById('mainGrid');
   const cnt=document.getElementById('mainCount');
   if(cnt)cnt.textContent=streams.length;
-  if(!streams.length){
-    grid.innerHTML='<div class="no-stream">Aucun stream actif pour le moment</div>';
-    return;
-  }
+  if(!streams.length){grid.innerHTML='<div class="no-stream">Aucun stream actif pour le moment</div>';return}
   grid.innerHTML=streams.map(s=>`
     <div class="scard" onclick="watchStream('${esc(s.url)}','${esc(s.name)}')">
       <div class="scard-thumb">
-        ${s.thumb
-          ? `<img src="${esc(s.thumb)}" alt="" onerror="this.outerHTML='<div class=scard-ph>📺</div>'">`
-          : '<div class="scard-ph">📺</div>'}
+        ${s.thumb?`<img src="${esc(s.thumb)}" alt="" onerror="this.outerHTML='<div class=scard-ph>📺</div>'">`:'<div class="scard-ph">📺</div>'}
         <div class="scard-live"><div style="width:5px;height:5px;background:#fff;border-radius:50%;animation:pulse 1.4s infinite"></div>LIVE</div>
       </div>
       <div class="scard-body">
         <div class="scard-name">${esc(s.name)}</div>
         <div class="scard-cat">${esc(s.cat||'Sport')}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-//  PLAYER HLS
-// ══════════════════════════════════════════════
+// ── PLAYER ────────────────────────────────────────────────
 function watchStream(url,name){
   document.getElementById('plName').textContent=name;
   document.getElementById('plStatus').textContent='Connexion...';
-  go('pg-player');
-  setTimeout(()=>startPlayer(url),150);
+  go('pg-player');setTimeout(()=>startPlayer(url),150);
 }
 
 function startPlayer(url){
@@ -525,58 +459,51 @@ function startPlayer(url){
   const v =document.getElementById('vid');
   const lo=document.getElementById('plive');
   const st=document.getElementById('plStatus');
-
-  ph.style.display='none'; v.style.display='block'; lo.classList.remove('show');
+  ph.style.display='none';v.style.display='block';lo.classList.remove('show');
   if(hlsI){hlsI.destroy();hlsI=null}
 
-  // Safari / iOS — HLS natif
   if(!Hls.isSupported()){
     if(v.canPlayType('application/vnd.apple.mpegurl')){
-      v.src=url; v.play().catch(()=>{});
-      lo.classList.add('show'); st.textContent='En direct ✅';
-    }else{
-      ph.style.display='flex';
-      ph.querySelector('p').textContent='⚠ Navigateur non supporté';
-      v.style.display='none';
-    }
+      v.src=url;v.play().catch(()=>{});lo.classList.add('show');st.textContent='En direct ✅';
+    }else{ph.style.display='flex';ph.querySelector('p').textContent='⚠ Navigateur non supporté';v.style.display='none';}
     return;
   }
 
-  st.textContent='Connexion... (peut prendre 10-20s)';
   hlsI=new Hls({
     enableWorker:true,
-    lowLatencyMode:false,
-    manifestLoadingTimeOut:30000,
-    manifestLoadingMaxRetry:5,
-    manifestLoadingRetryDelay:2000,
-    levelLoadingTimeOut:30000,
-    levelLoadingMaxRetry:5,
-    fragLoadingTimeOut:30000,
-    fragLoadingMaxRetry:5,
+    lowLatencyMode:true,
+    manifestLoadingTimeOut:20000,
+    manifestLoadingMaxRetry:6,
+    levelLoadingTimeOut:20000,
+    fragLoadingTimeOut:20000,
+    fragLoadingMaxRetry:6,
   });
   hlsI.loadSource(url);
   hlsI.attachMedia(v);
   hlsI.on(Hls.Events.MANIFEST_PARSED,()=>{
-    v.play().catch(()=>{});
-    lo.classList.add('show');
-    st.textContent='En direct ✅';
+    v.play().catch(()=>{});lo.classList.add('show');st.textContent='En direct ✅';
   });
   hlsI.on(Hls.Events.ERROR,(_,d)=>{
-    console.warn('HLS error',d.type,d.details,d.fatal);
     if(d.fatal){
-      hlsI.destroy(); hlsI=null;
+      hlsI.destroy();hlsI=null;
       ph.style.display='flex';
-      ph.querySelector('p').textContent='⚠ Flux indisponible';
-      v.style.display='none';
-      st.textContent='Erreur de lecture';
-      toast('⚠ Flux indisponible',true);
+      ph.querySelector('p').textContent='⚠ OBS pas en direct ou flux indisponible';
+      v.style.display='none';st.textContent='Erreur';
     }
   });
 }
 
-// ══════════════════════════════════════════════
-//  ADMIN LOGIN
-// ══════════════════════════════════════════════
+// ── OBS STATUS CHECK ─────────────────────────────────────
+async function checkOBS(){
+  const el=document.getElementById('obsStatusEl');if(!el)return;
+  try{
+    const r=await fetch(`${VPS}/hls/bsport.m3u8`,{method:'HEAD'});
+    if(r.ok){el.className='obs-status live';el.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.4s infinite"></div>OBS EN DIRECT';}
+    else{el.className='obs-status offline';el.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:currentColor"></div>OBS HORS LIGNE';}
+  }catch(e){el.className='obs-status offline';el.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:currentColor"></div>OBS HORS LIGNE';}
+}
+
+// ── ADMIN LOGIN ───────────────────────────────────────────
 function doLogin(){
   if(document.getElementById('aPass').value===PASS){
     document.getElementById('aLogin').style.display='none';
@@ -584,7 +511,7 @@ function doLogin(){
     document.getElementById('logoutBtn').style.display='block';
     document.getElementById('aPass').value='';
     document.getElementById('aErr').style.display='none';
-    fillConfigFields(); loadStreams(); renderStreamList();
+    loadStreams();renderStreamList();checkOBS();
   }else document.getElementById('aErr').style.display='block';
 }
 function logout(){
@@ -593,212 +520,58 @@ function logout(){
   document.getElementById('logoutBtn').style.display='none';
 }
 
-// ══════════════════════════════════════════════
-//  RECHERCHE CHAÎNES
-// ══════════════════════════════════════════════
-async function searchCh(){
-  const q=document.getElementById('chSrch').value.trim().toLowerCase();
-  if(!q){toast('Tape un nom de chaîne',true);return}
-  if(!CFG.worker){toast('⚠ Configure le Worker d\'abord !',true);return}
-
-  const info=document.getElementById('loadInfo');
-  const list=document.getElementById('chList');
-
-  // Chargement initial de toutes les chaînes
-  if(!allCh.length){
-    info.textContent='⏳ Chargement des chaînes...';
-    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--mut);font-size:.78rem">⏳ Connexion au serveur...</div>';
-    try{
-      const r=await fetch(apiUrl('get_live_streams'));
-      if(!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data=await r.json();
-      if(!Array.isArray(data)||!data.length) throw new Error('Réponse vide');
-      allCh=data;
-      info.textContent=`✅ ${data.length} chaînes disponibles`;
-      const sc=document.getElementById('stCh');if(sc)sc.textContent=data.length;
-    }catch(e){
-      info.textContent='❌ '+e.message;
-      list.innerHTML=`<div style="padding:20px;text-align:center;color:var(--red);font-size:.78rem">
-        ❌ Impossible de charger les chaînes<br>
-        <small style="color:var(--mut)">${e.message}</small><br><br>
-        <small style="color:var(--mut)">Vérifie l'URL du Worker Cloudflare</small>
-      </div>`;
-      return;
-    }
-  }
-
-  const results=allCh.filter(c=>(c.name||'').toLowerCase().includes(q)).slice(0,60);
-  if(!results.length){
-    list.innerHTML=`<div style="padding:20px;text-align:center;color:var(--mut);font-size:.78rem">Aucun résultat pour "${q}"</div>`;
-    return;
-  }
-
-  const activeUrls=new Set(streams.map(s=>s.url));
-  list.innerHTML=results.map(c=>{
-    const url=streamUrl(c.stream_id);
-    const isAdded=activeUrls.has(url);
-    return `<div class="ch-item">
-      <div class="ch-logo">${c.stream_icon?`<img src="${esc(c.stream_icon)}" onerror="this.style.display='none'" alt="">`:'📺'}</div>
-      <div class="ch-info">
-        <div class="ch-name">${esc(c.name)}</div>
-        <div class="ch-grp">${esc(c.category_name||'')}</div>
-      </div>
-      <button class="ch-add${isAdded?' added':''}"
-        onclick="diffuser(${c.stream_id},'${esc(c.name)}','${esc(c.category_name||'Sport')}','${esc(c.stream_icon||'')}')"
-        ${isAdded?'disabled':''}>
-        ${isAdded?'✔ Actif':'Diffuser'}
-      </button>
-    </div>`;
-  }).join('');
-}
-
-async function diffuser(id,name,cat,logo){
-  const url=streamUrl(id);
-  if(streams.find(s=>s.url===url)){toast('Déjà diffusé !',true);return}
-  streams.push({id:Date.now(),name,url,cat,thumb:logo});
-  await saveStreams();
-  renderStreamList();
-  searchCh();
-  toast(`🔴 "${name}" diffusé !`);
-}
-
-function removeStream(id){
-  streams=streams.filter(s=>s.id!==id);
-  saveStreams(); renderStreamList();
-}
-
-function renderStreamList(){
-  const el=document.getElementById('streamList'); if(!el)return;
-  document.getElementById('stCount').textContent=streams.length;
-  if(!streams.length){
-    el.innerHTML='<div style="padding:28px;text-align:center;color:var(--mut);font-size:.8rem;border:1px dashed var(--brd);border-radius:9px">Aucun stream actif</div>';
-    return;
-  }
-  el.innerHTML=streams.map(s=>`
-    <div class="sc">
-      <div class="sc-thumb">${s.thumb?`<img src="${esc(s.thumb)}" alt="" onerror="this.style.display='none'">`:'📺'}</div>
-      <div class="sc-info">
-        <div class="sc-name">${esc(s.name)}</div>
-        <div class="sc-url">${esc(s.url)}</div>
-        <div class="sc-acts"><button class="sca del" onclick="removeStream(${s.id})">🗑 Retirer</button></div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ══════════════════════════════════════════════
-//  POPUPS
-// ══════════════════════════════════════════════
+// ── POPUPS ────────────────────────────────────────────────
 const POPUPS={
-  discord :{icon:'🎮',title:'REJOIGNEZ<br><span style="color:#5865F2">NOTRE DISCORD</span>',sub:'Support & offres exclusives',btn:'➤ Rejoindre le Discord',color:'#5865F2',action:()=>window.open(DISCORD,'_blank')},
+  discord:{icon:'🎮',title:'REJOIGNEZ<br><span style="color:#5865F2">NOTRE DISCORD</span>',sub:'Support & offres exclusives',btn:'➤ Rejoindre le Discord',color:'#5865F2',action:()=>window.open(DISCORD,'_blank')},
   telegram:{icon:'📲',title:'REJOIGNEZ<br><span style="color:var(--tg)">NOTRE TELEGRAM</span>',sub:'Toutes nos offres',btn:'➤ Rejoindre le Telegram',color:'var(--tg)',action:()=>window.open(TELEGRAM,'_blank')},
-  abo     :{icon:'🔥',title:'ACCÈS <span style="color:var(--red)">ILLIMITÉ</span><br>À L\'IPTV',sub:'Chaînes · Films · Séries',btn:"🚀 S'abonner maintenant",color:'var(--red)',action:()=>go('pg-access')}
+  abo:{icon:'🔥',title:'ACCÈS <span style="color:var(--red)">ILLIMITÉ</span><br>À L\'IPTV',sub:'Chaînes · Films · Séries',btn:"🚀 S'abonner maintenant",color:'var(--red)',action:()=>go('pg-access')}
 };
-
-async function triggerPopup(type){
-  localStorage.setItem('bs:popup',type);
-  localStorage.setItem('bs:lastPop',type);
-  await gistSave({streams,activePopup:type});
-  showPopupType(type);
-  toast('Popup "'+type+'" envoyée !');
-}
-async function stopPopup(){
-  localStorage.removeItem('bs:popup');
-  localStorage.removeItem('bs:lastPop');
-  await gistSave({streams,activePopup:null});
-  closePopup();
-  toast('Popup désactivée');
-}
+async function triggerPopup(type){localStorage.setItem('bs:popup',type);localStorage.setItem('bs:lastPop',type);await gistSave({streams,activePopup:type});showPopupType(type);toast('Popup "'+type+'" envoyée !')}
+async function stopPopup(){localStorage.removeItem('bs:popup');localStorage.removeItem('bs:lastPop');await gistSave({streams,activePopup:null});closePopup();toast('Popup désactivée')}
 function showPopupType(type){
-  const c=POPUPS[type]; if(!c)return;
+  const c=POPUPS[type];if(!c)return;
   document.getElementById('popIcon').textContent=c.icon;
   document.getElementById('popTitle').innerHTML=c.title;
   document.getElementById('popSub').textContent=c.sub;
-  const btn=document.getElementById('popBtn');
-  btn.textContent=c.btn; btn.style.background=c.color;
+  const btn=document.getElementById('popBtn');btn.textContent=c.btn;btn.style.background=c.color;
   btn.onclick=()=>{c.action();closePopup()};
   document.getElementById('popup').style.display='flex';
   let n=5;
-  const cb=document.getElementById('popClose'), sk=document.getElementById('popSkip');
-  cb.disabled=true; cb.style.cursor='not-allowed'; cb.innerHTML='<span id="popCt">5</span>';
-  sk.disabled=true; sk.style.opacity='.4'; sk.style.cursor='not-allowed';
-  sk.innerHTML='Passer dans <span id="popSkipCt">5</span>s...';
+  const cb=document.getElementById('popClose'),sk=document.getElementById('popSkip');
+  cb.disabled=true;cb.style.cursor='not-allowed';cb.innerHTML='<span id="popCt">5</span>';
+  sk.disabled=true;sk.style.opacity='.4';sk.style.cursor='not-allowed';sk.innerHTML='Passer dans <span id="popSkipCt">5</span>s...';
   clearInterval(popTimer);
   popTimer=setInterval(()=>{
-    n--;
-    const c1=document.getElementById('popCt'), c2=document.getElementById('popSkipCt');
-    if(c1)c1.textContent=n; if(c2)c2.textContent=n;
-    if(n<=0){
-      clearInterval(popTimer);
-      cb.disabled=false; cb.style.cursor='pointer';
-      cb.style.border='1px solid var(--red)'; cb.style.color='#fff'; cb.style.background='var(--red)'; cb.innerHTML='✕';
-      sk.disabled=false; sk.style.opacity='1'; sk.style.cursor='pointer'; sk.innerHTML='Continuer vers le site';
-    }
+    n--;const c1=document.getElementById('popCt'),c2=document.getElementById('popSkipCt');
+    if(c1)c1.textContent=n;if(c2)c2.textContent=n;
+    if(n<=0){clearInterval(popTimer);cb.disabled=false;cb.style.cursor='pointer';cb.style.border='1px solid var(--red)';cb.style.color='#fff';cb.style.background='var(--red)';cb.innerHTML='✕';sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Continuer vers le site';}
   },1000);
 }
 function closePopup(){clearInterval(popTimer);document.getElementById('popup').style.display='none'}
 
-// ══════════════════════════════════════════════
-//  SPLASH SCREEN
-// ══════════════════════════════════════════════
+// ── SPLASH ────────────────────────────────────────────────
 function initSplash(){
   const v=parseInt(localStorage.getItem('bs:visits')||'0')+1;
   localStorage.setItem('bs:visits',v);
   for(let i=1;i<=3;i++){const d=document.getElementById('d'+i);if(d)d.className='sdot'+(i<=v?' on':'')}
-  if(v===1){
-    document.getElementById('sIcon').textContent='📲';
-    document.getElementById('sTitle').innerHTML='REJOIGNEZ<br><span style="color:var(--tg)">NOTRE TELEGRAM</span>';
-    document.getElementById('sSub').textContent='Offres et actualités';
-    const b=document.getElementById('sBtn'); b.textContent='➤ Rejoindre le Telegram'; b.style.background='var(--tg)';
-  }else if(v===2){
-    document.getElementById('sIcon').textContent='🎮';
-    document.getElementById('sTitle').innerHTML='REJOIGNEZ<br><span style="color:#5865F2">NOTRE DISCORD</span>';
-    document.getElementById('sSub').textContent='Support & offres exclusives';
-    const b=document.getElementById('sBtn'); b.textContent='➤ Rejoindre le Discord'; b.style.background='#5865F2';
-  }else{enterSite();return}
-  let ct=5; clearInterval(splashTimer);
-  splashTimer=setInterval(()=>{
-    ct--; const el=document.getElementById('sCt'); if(el)el.textContent=ct;
-    if(ct<=0){
-      clearInterval(splashTimer);
-      const sk=document.getElementById('sSkip');
-      if(sk){sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Ignorer →'}
-    }
-  },1000);
+  if(v===1){document.getElementById('sIcon').textContent='📲';document.getElementById('sTitle').innerHTML='REJOIGNEZ<br><span style="color:var(--tg)">NOTRE TELEGRAM</span>';document.getElementById('sSub').textContent='Offres et actualités';const b=document.getElementById('sBtn');b.textContent='➤ Rejoindre le Telegram';b.style.background='var(--tg)';}
+  else if(v===2){document.getElementById('sIcon').textContent='🎮';document.getElementById('sTitle').innerHTML='REJOIGNEZ<br><span style="color:#5865F2">NOTRE DISCORD</span>';document.getElementById('sSub').textContent='Support & offres exclusives';const b=document.getElementById('sBtn');b.textContent='➤ Rejoindre le Discord';b.style.background='#5865F2';}
+  else{enterSite();return}
+  let ct=5;clearInterval(splashTimer);
+  splashTimer=setInterval(()=>{ct--;const el=document.getElementById('sCt');if(el)el.textContent=ct;if(ct<=0){clearInterval(splashTimer);const sk=document.getElementById('sSkip');if(sk){sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Ignorer →'}}},1000);
 }
-function splashAction(){
-  clearInterval(splashTimer);
-  const v=parseInt(localStorage.getItem('bs:visits')||'1');
-  if(v===1) window.open(TELEGRAM,'_blank'); else window.open(DISCORD,'_blank');
-  enterSite();
-}
-function enterSite(){
-  const s=document.getElementById('splash');
-  s.style.opacity='0'; s.style.transition='opacity .4s';
-  setTimeout(()=>s.style.display='none',400);
-}
+function splashAction(){clearInterval(splashTimer);const v=parseInt(localStorage.getItem('bs:visits')||'1');if(v===1)window.open(TELEGRAM,'_blank');else window.open(DISCORD,'_blank');enterSite();}
+function enterSite(){const s=document.getElementById('splash');s.style.opacity='0';s.style.transition='opacity .4s';setTimeout(()=>s.style.display='none',400);}
 function resetSplash(){localStorage.removeItem('bs:visits');toast('Splash remis à zéro !')}
 
-// ══════════════════════════════════════════════
-//  AUTO SYNC toutes les 20s
-// ══════════════════════════════════════════════
 setInterval(async()=>{
-  const r=await gistLoad(); if(!r)return;
+  const r=await gistLoad();if(!r)return;
   if(r.streams){streams=r.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));renderPublic()}
-  if(r.activePopup){
-    const last=localStorage.getItem('bs:lastPop');
-    if(last!==r.activePopup){localStorage.setItem('bs:lastPop',r.activePopup);showPopupType(r.activePopup)}
-  }else localStorage.removeItem('bs:lastPop');
+  if(r.activePopup){const last=localStorage.getItem('bs:lastPop');if(last!==r.activePopup){localStorage.setItem('bs:lastPop',r.activePopup);showPopupType(r.activePopup)}}
+  else localStorage.removeItem('bs:lastPop');
 },20000);
 
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
-window.addEventListener('load',()=>{
-  loadConfig();
-  loadPublic();
-  initSplash();
-});
+window.addEventListener('load',()=>{loadPublic();initSplash();});
 </script>
 </body>
 </html>
