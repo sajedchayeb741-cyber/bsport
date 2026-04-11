@@ -215,7 +215,7 @@ footer span{color:var(--red)}
     </div>
     <div id="mainGrid" class="sgrid"></div>
   </div>
-  <footer>© 2025 <span>LB Stream</span> — Tous droits réservés</footer>
+  <footer>© 2025 <span>LB Stream</span> — Tous droits réservés &nbsp;·&nbsp; <a href="#" onclick="go('pg-legal');return false" style="color:var(--mut);text-decoration:none">Mentions légales</a> &nbsp;·&nbsp; <a href="#" onclick="go('pg-cgu');return false" style="color:var(--mut);text-decoration:none">CGU</a> &nbsp;·&nbsp; <a href="#" onclick="go('pg-dmca');return false" style="color:var(--mut);text-decoration:none">DMCA</a></footer>
 </div>
 
 <!-- PLAYER -->
@@ -525,5 +525,78 @@ setInterval(async()=>{
 
 window.addEventListener('load',()=>{loadPublic();initSplash();});
 </script>
+
+<!-- MENTIONS LEGALES -->
+<div id="pg-legal" class="page">
+  <nav>
+    <div class="logo" onclick="go('pg-home')">LB <span>Stream</span></div>
+    <div class="nav-right"><button class="npill ghost" onclick="go('pg-home')">← Accueil</button></div>
+  </nav>
+  <div style="max-width:800px;margin:0 auto;padding:44px 22px;flex:1">
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;margin-bottom:24px">Mentions Légales</h1>
+    <div style="color:var(--mut);line-height:1.9;font-size:.88rem">
+      <h3 style="color:var(--txt);margin-bottom:8px">Éditeur du site</h3>
+      <p style="margin-bottom:18px">LB Stream est un agrégateur de contenus diffusés en direct. Le site ne stocke, ne reproduit et ne distribue aucun contenu protégé. Les flux sont transmis par des tiers indépendants.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">Hébergement</h3>
+      <p style="margin-bottom:18px">Ce site est hébergé par des prestataires tiers. LB Stream ne peut être tenu responsable des contenus diffusés par des utilisateurs tiers.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">Responsabilité</h3>
+      <p style="margin-bottom:18px">LB Stream agit en qualité d'intermédiaire technique. Conformément aux dispositions légales en vigueur, notre responsabilité ne saurait être engagée du fait des contenus diffusés par des tiers.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">Contact</h3>
+      <p>Pour toute question : <a href="https://discord.gg/FABHWRfX" target="_blank" style="color:var(--red)">Discord</a> ou <a href="https://t.me/bsport12" target="_blank" style="color:var(--red)">Telegram</a></p>
+    </div>
+  </div>
+  <footer>© 2025 <span>LB Stream</span></footer>
+</div>
+
+<!-- CGU -->
+<div id="pg-cgu" class="page">
+  <nav>
+    <div class="logo" onclick="go('pg-home')">LB <span>Stream</span></div>
+    <div class="nav-right"><button class="npill ghost" onclick="go('pg-home')">← Accueil</button></div>
+  </nav>
+  <div style="max-width:800px;margin:0 auto;padding:44px 22px;flex:1">
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;margin-bottom:24px">Conditions Générales d'Utilisation</h1>
+    <div style="color:var(--mut);line-height:1.9;font-size:.88rem">
+      <h3 style="color:var(--txt);margin-bottom:8px">1. Objet</h3>
+      <p style="margin-bottom:18px">LB Stream est une plateforme technique permettant la visualisation de flux vidéo diffusés en direct. L'utilisation du site implique l'acceptation pleine et entière des présentes CGU.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">2. Accès au service</h3>
+      <p style="margin-bottom:18px">L'accès aux contenus est réservé aux utilisateurs majeurs. LB Stream se réserve le droit de suspendre l'accès à tout utilisateur ne respectant pas les présentes conditions.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">3. Responsabilité des contenus</h3>
+      <p style="margin-bottom:18px">LB Stream est un prestataire technique. Les contenus diffusés sont sous la responsabilité exclusive de leurs émetteurs. LB Stream ne saurait être tenu responsable de la nature des contenus tiers.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">4. Propriété intellectuelle</h3>
+      <p style="margin-bottom:18px">LB Stream respecte les droits de propriété intellectuelle. Tout signalement de contenu contrefaisant peut être effectué via notre page DMCA.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">5. Modification des CGU</h3>
+      <p>LB Stream se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs seront informés de toute modification substantielle.</p>
+    </div>
+  </div>
+  <footer>© 2025 <span>LB Stream</span></footer>
+</div>
+
+<!-- DMCA -->
+<div id="pg-dmca" class="page">
+  <nav>
+    <div class="logo" onclick="go('pg-home')">LB <span>Stream</span></div>
+    <div class="nav-right"><button class="npill ghost" onclick="go('pg-home')">← Accueil</button></div>
+  </nav>
+  <div style="max-width:800px;margin:0 auto;padding:44px 22px;flex:1">
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;margin-bottom:24px">DMCA — Signalement</h1>
+    <div style="color:var(--mut);line-height:1.9;font-size:.88rem">
+      <p style="margin-bottom:18px">LB Stream respecte les droits de propriété intellectuelle et se conforme au Digital Millennium Copyright Act (DMCA) ainsi qu'aux législations équivalentes.</p>
+      <h3 style="color:var(--txt);margin-bottom:8px">Signaler un contenu</h3>
+      <p style="margin-bottom:18px">Si vous estimez qu'un contenu diffusé sur notre plateforme porte atteinte à vos droits, veuillez nous contacter avec les informations suivantes :</p>
+      <ul style="margin-bottom:18px;padding-left:18px">
+        <li style="margin-bottom:6px">Identification précise du contenu concerné</li>
+        <li style="margin-bottom:6px">Preuve de vos droits sur ce contenu</li>
+        <li style="margin-bottom:6px">Vos coordonnées complètes</li>
+        <li style="margin-bottom:6px">Déclaration de bonne foi</li>
+      </ul>
+      <h3 style="color:var(--txt);margin-bottom:8px">Contact DMCA</h3>
+      <p style="margin-bottom:18px">Envoyez votre signalement via : <a href="https://discord.gg/FABHWRfX" target="_blank" style="color:var(--red)">Discord</a></p>
+      <p style="font-size:.78rem">Nous traitons chaque signalement dans un délai de 48 heures ouvrées. Tout contenu signalé légitimement sera retiré dans les meilleurs délais.</p>
+    </div>
+  </div>
+  <footer>© 2025 <span>LB Stream</span></footer>
+</div>
+
 </body>
 </html>
