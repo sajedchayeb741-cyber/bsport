@@ -413,8 +413,7 @@ async function loadPublic(){
   const remote=await gistLoad();
   if(remote&&remote.streams){
     streams=remote.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));
-    if(remote.activePopup){const last=localStorage.getItem('bs:lastPop');if(last!==remote.activePopup){localStorage.setItem('bs:lastPop',remote.activePopup);setTimeout(()=>showPopupType(remote.activePopup),600)}}
-    else localStorage.removeItem('bs:lastPop');
+    if(remote.activePopup){setTimeout(()=>showPopupType(remote.activePopup),600);}
   }else loadStreams();
   renderPublic();
 }
@@ -488,20 +487,31 @@ const POPUPS={
   telegram:{icon:'📲',title:'REJOIGNEZ<br><span style="color:var(--tg)">NOTRE TELEGRAM</span>',sub:'Toutes nos offres',btn:'➤ Rejoindre le Telegram',color:'var(--tg)',action:()=>window.open(TELEGRAM,'_blank')},
   abo:{icon:'🔥',title:'ACCÈS <span style="color:var(--red)">PREMIUM</span><br>DISPONIBLE',sub:'Streaming illimité',btn:"🚀 S'abonner maintenant",color:'var(--red)',action:()=>go('pg-access')}
 };
-async function triggerPopup(type){localStorage.setItem('bs:popup',type);localStorage.setItem('bs:lastPop',type);await gistSave({streams,activePopup:type});showPopupType(type);toast('Popup envoyée !')}
-async function stopPopup(){localStorage.removeItem('bs:popup');localStorage.removeItem('bs:lastPop');await gistSave({streams,activePopup:null});closePopup();toast('Popup désactivée')}
+async function triggerPopup(type){localStorage.setItem('bs:popup',type);await gistSave({streams,activePopup:type});showPopupType(type);toast('Popup envoyée !')}
+async function stopPopup(){localStorage.removeItem('bs:popup');await gistSave({streams,activePopup:null});closePopup();toast('Popup désactivée')}
 function showPopupType(type){
   const c=POPUPS[type];if(!c)return;
-  document.getElementById('popIcon').textContent=c.icon;document.getElementById('popTitle').innerHTML=c.title;document.getElementById('popSub').textContent=c.sub;
-  const btn=document.getElementById('popBtn');btn.textContent=c.btn;btn.style.background=c.color;btn.onclick=()=>{c.action();closePopup()};
+  document.getElementById('popIcon').textContent=c.icon;
+  document.getElementById('popTitle').innerHTML=c.title;
+  document.getElementById('popSub').textContent=c.sub;
+  const btn=document.getElementById('popBtn');
+  btn.textContent=c.btn;btn.style.background=c.color;
+  // Quand on clique : ouvre le lien, ferme la popup, désactive côté admin
+  btn.onclick=async()=>{
+    c.action();
+    closePopup();
+    // Désactive la popup côté admin automatiquement
+    localStorage.removeItem('bs:popup');
+    await gistSave({streams,activePopup:null});
+  };
+  // Masquer le bouton close et skip
+  const cb=document.getElementById('popClose');
+  cb.style.display='none';
+  const sk=document.getElementById('popSkip');
+  sk.style.display='none';
   document.getElementById('popup').style.display='flex';
-  let n=5;const cb=document.getElementById('popClose'),sk=document.getElementById('popSkip');
-  cb.disabled=true;cb.style.cursor='not-allowed';cb.innerHTML='<span id="popCt">5</span>';
-  sk.disabled=true;sk.style.opacity='.4';sk.style.cursor='not-allowed';sk.innerHTML='Passer dans <span id="popSkipCt">5</span>s...';
-  clearInterval(popTimer);
-  popTimer=setInterval(()=>{n--;const c1=document.getElementById('popCt'),c2=document.getElementById('popSkipCt');if(c1)c1.textContent=n;if(c2)c2.textContent=n;if(n<=0){clearInterval(popTimer);cb.disabled=false;cb.style.cursor='pointer';cb.style.border='1px solid var(--red)';cb.style.color='#fff';cb.style.background='var(--red)';cb.innerHTML='✕';sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Continuer';}},1000);
 }
-function closePopup(){clearInterval(popTimer);document.getElementById('popup').style.display='none'}
+function closePopup(){document.getElementById('popup').style.display='none';}
 
 function initSplash(){
   const v=parseInt(localStorage.getItem('bs:visits')||'0')+1;localStorage.setItem('bs:visits',v);
