@@ -448,7 +448,7 @@ function toggleFullscreen(){
   document.querySelector('.fullscreen-btn').textContent=w.classList.contains('custom-fullscreen')?'✕':'⛶';
 }
 
-function watchStream(url,name){
+async function watchStream(url,name){
   // Vérifie si popup active avant de lancer
   const r=await gistLoad();
   if(r&&r.activePopup){showPopupType(r.activePopup);pendingStream={url,name};return;}
