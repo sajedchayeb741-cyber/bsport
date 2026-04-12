@@ -146,6 +146,11 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:0 28px
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--brd);transition:background .3s}.sdot.on{background:var(--red)}
 .toast{position:fixed;bottom:18px;right:18px;background:var(--grn);color:#000;padding:9px 18px;border-radius:7px;font-size:.8rem;font-weight:700;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}.toast.err{background:var(--red);color:#fff}
+
+.pvid-wrap.custom-fullscreen{position:fixed;inset:0;z-index:8000;border-radius:0;aspect-ratio:unset;border:none}
+.pvid-wrap.custom-fullscreen video{width:100%;height:100%}
+.fullscreen-btn{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:1rem;z-index:10}
+
 footer{text-align:center;padding:18px;border-top:1px solid var(--brd);font-size:.7rem;color:var(--mut)}
 footer span{color:var(--red)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
@@ -230,7 +235,8 @@ footer span{color:var(--red)}
     <div class="pstatus" id="plStatus">Connexion...</div>
     <div class="pvid-wrap">
       <div class="pph" id="pph"><span>📡</span><p>Chargement...</p></div>
-      <video id="vid" controls playsinline style="width:100%;height:100%;display:none"></video>
+      <video id="vid" controls playsinline webkit-playsinline style="width:100%;height:100%;display:none"></video>
+      <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
       <div class="plive" id="plive"><div style="width:6px;height:6px;background:#fff;border-radius:50%;animation:pulse 1.4s infinite"></div>LIVE</div>
     </div>
   </div>
@@ -335,7 +341,7 @@ function hlsUrl(key){ return `${VPS}/hls/${key}.m3u8`; }
 function _gi(){return atob(['YThjN2U5Yjc','2YzkxYzY3OD','Y5YjkzZDUyZ','TY3MWI3NGY='].join(''))}
 function _gt(){return atob(['Z2hwXzJIcVBDQj','JqakROcnpDWFNX','V08wazhTQmlBdz','NkUzFBdDFrRg=='].join(''))}
 
-let streams=[], hlsI=null, logoClicks=0, logoTimer=null, popTimer=null, splashTimer=null;
+let streams=[], hlsI=null, pendingStream=null, logoClicks=0, logoTimer=null, popTimer=null, splashTimer=null;
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function toast(m,e=false){const t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
@@ -413,7 +419,7 @@ async function loadPublic(){
   const remote=await gistLoad();
   if(remote&&remote.streams){
     streams=remote.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));
-    if(remote.activePopup){setTimeout(()=>showPopupType(remote.activePopup),600);}
+    if(remote.activePopup){setTimeout(()=>showPopupType(remote.activePopup),800);}
   }else loadStreams();
   renderPublic();
 }
@@ -436,7 +442,16 @@ function renderPublic(){
     </div>`).join('');
 }
 
+function toggleFullscreen(){
+  const w=document.querySelector('.pvid-wrap');
+  w.classList.toggle('custom-fullscreen');
+  document.querySelector('.fullscreen-btn').textContent=w.classList.contains('custom-fullscreen')?'✕':'⛶';
+}
+
 function watchStream(url,name){
+  // Vérifie si popup active avant de lancer
+  const r=await gistLoad();
+  if(r&&r.activePopup){showPopupType(r.activePopup);pendingStream={url,name};return;}
   document.getElementById('plName').textContent=name;
   document.getElementById('plStatus').textContent='Connexion...';
   go('pg-player');setTimeout(()=>startPlayer(url),150);
@@ -500,9 +515,15 @@ function showPopupType(type){
   btn.onclick=async()=>{
     c.action();
     closePopup();
-    // Désactive la popup côté admin automatiquement
     localStorage.removeItem('bs:popup');
     await gistSave({streams,activePopup:null});
+    // Lance le stream en attente si il y en a un
+    if(pendingStream){
+      const {url,name}=pendingStream;pendingStream=null;
+      document.getElementById('plName').textContent=name;
+      document.getElementById('plStatus').textContent='Connexion...';
+      go('pg-player');setTimeout(()=>startPlayer(url),150);
+    }
   };
   // Masquer le bouton close et skip
   const cb=document.getElementById('popClose');
