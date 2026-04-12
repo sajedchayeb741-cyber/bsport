@@ -535,13 +535,48 @@ function showPopupType(type){
 function closePopup(){document.getElementById('popup').style.display='none';}
 
 function initSplash(){
-  const v=parseInt(localStorage.getItem('bs:visits')||'0')+1;localStorage.setItem('bs:visits',v);
+  const v=parseInt(localStorage.getItem('bs:visits')||'0')+1;
+  localStorage.setItem('bs:visits',v);
   for(let i=1;i<=3;i++){const d=document.getElementById('d'+i);if(d)d.className='sdot'+(i<=v?' on':'')}
-  if(v===1){document.getElementById('sIcon').textContent='📲';document.getElementById('sTitle').innerHTML='REJOIGNEZ<br><span style="color:var(--tg)">NOTRE TELEGRAM</span>';document.getElementById('sSub').textContent='Offres et actualités';const b=document.getElementById('sBtn');b.textContent='➤ Rejoindre le Telegram';b.style.background='var(--tg)';}
-  else if(v===2){document.getElementById('sIcon').textContent='🎮';document.getElementById('sTitle').innerHTML='REJOIGNEZ<br><span style="color:#5865F2">NOTRE DISCORD</span>';document.getElementById('sSub').textContent='Support & offres exclusives';const b=document.getElementById('sBtn');b.textContent='➤ Rejoindre le Discord';b.style.background='#5865F2';}
-  else{enterSite();return}
-  let ct=5;clearInterval(splashTimer);
-  splashTimer=setInterval(()=>{ct--;const el=document.getElementById('sCt');if(el)el.textContent=ct;if(ct<=0){clearInterval(splashTimer);const sk=document.getElementById('sSkip');if(sk){sk.disabled=false;sk.style.opacity='1';sk.style.cursor='pointer';sk.innerHTML='Ignorer →'}}},1000);
+  
+  // Après 2 visites, on passe directement
+  if(v>2){enterSite();return}
+  
+  const icon=document.getElementById('sIcon');
+  const title=document.getElementById('sTitle');
+  const sub=document.getElementById('sSub');
+  const btn=document.getElementById('sBtn');
+  const skip=document.getElementById('sSkip');
+  
+  if(!icon||!title||!sub||!btn){enterSite();return}
+  
+  if(v===1){
+    icon.textContent='📲';
+    title.innerHTML='REJOIGNEZ<br><span style="color:var(--tg)">NOTRE TELEGRAM</span>';
+    sub.textContent='Offres et actualités';
+    btn.textContent='➤ Rejoindre le Telegram';
+    btn.style.background='var(--tg)';
+  }else{
+    icon.textContent='🎮';
+    title.innerHTML='REJOIGNEZ<br><span style="color:#5865F2">NOTRE DISCORD</span>';
+    sub.textContent='Support & offres exclusives';
+    btn.textContent='➤ Rejoindre le Discord';
+    btn.style.background='#5865F2';
+  }
+  
+  // Countdown ignorer
+  let ct=5;
+  if(skip){skip.disabled=true;skip.style.opacity='.4';skip.style.cursor='not-allowed';}
+  clearInterval(splashTimer);
+  splashTimer=setInterval(()=>{
+    ct--;
+    const el=document.getElementById('sCt');
+    if(el)el.textContent=ct;
+    if(ct<=0){
+      clearInterval(splashTimer);
+      if(skip){skip.disabled=false;skip.style.opacity='1';skip.style.cursor='pointer';skip.innerHTML='Ignorer →'}
+    }
+  },1000);
 }
 function splashAction(){clearInterval(splashTimer);const v=parseInt(localStorage.getItem('bs:visits')||'1');if(v===1)window.open(TELEGRAM,'_blank');else window.open(DISCORD,'_blank');enterSite();}
 function enterSite(){const s=document.getElementById('splash');s.style.opacity='0';s.style.transition='opacity .4s';setTimeout(()=>s.style.display='none',400);}
