@@ -621,7 +621,7 @@ function renderPublic(){
   if(cnt)cnt.textContent=streams.length;
   if(!streams.length){grid.innerHTML='<div class="no-stream">Aucun stream actif pour le moment</div>';return}
   grid.innerHTML=streams.map(s=>`
-    <div class="scard" onclick="watchStream('${esc(s.url)}','${esc(s.name)}')">
+    <div class="scard" onclick="watchStream('${esc(s.url)}','${esc(s.name)}')" data-url="${esc(s.url)}">
       <div class="scard-thumb">
         ${s.thumb?`<img src="${esc(s.thumb)}" alt="" onerror="this.outerHTML='<div class=scard-ph>📺</div>'">`:'<div class="scard-ph">📺</div>'}
         <div class="viewers-badge"><div class="vdot"></div><span class="vcount" data-key="${s.key||'default'}">0</span> viewers</div>
@@ -823,8 +823,14 @@ function stopViewers(){
 async function updateCardViewers(){
   const cards = document.querySelectorAll('.vcount');
   for(const card of cards){
-    const key = card.dataset.key;
-    if(!key) continue;
+    let key = card.dataset.key;
+    // Extract key from HLS URL if not set directly
+    if(!key || key==='default'){
+      const url = card.closest('.scard')?.dataset?.url || '';
+      const match = url.match(/\/hls\/(.+)\.m3u8/);
+      if(match) key = match[1];
+    }
+    if(!key || key==='default') continue;
     try{
       const r = await fetch(`${VIEWERS_URL}/count?key=${encodeURIComponent(key)}`);
       const d = await r.json();
