@@ -826,7 +826,7 @@ async function updateCardViewers(){
     const url = scard.getAttribute('data-url') || '';
     const card = scard.querySelector('.vcount');
     if(!card||!url) continue;
-    const m = url.match(/\/hls\/(.+?)\.m3u8/);
+    const m = url.match(/hls\/(.+?)\.m3u8/) || url.match(/hls\/(.+?)(?:\.m3u8|$)/);
     if(!m) continue;
     const key = m[1];
     try{
