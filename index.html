@@ -201,7 +201,7 @@ footer span{color:var(--red)}
     <div class="nav-right">
       <button class="npill red" onclick="go('pg-access')">🔥 Accès Premium</button>
       <a href="https://t.me/bsport12" target="_blank" class="npill ghost">📲</a>
-      <a href="https://discord.gg/FABHWRfX" target="_blank" class="npill ghost">💬</a>
+      <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="npill ghost">💬</a>
     </div>
   </nav>
   <div class="hero">
@@ -212,7 +212,7 @@ footer span{color:var(--red)}
       <div class="hero-tag">Streaming en direct, sans interruption</div>
       <div class="hero-btns">
         <button class="hbtn red" onclick="go('pg-access')">🔥 Accès Premium</button>
-        <a href="https://discord.gg/FABHWRfX" target="_blank" class="hbtn dc">💬 Discord</a>
+        <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="hbtn dc">💬 Discord</a>
         <a href="https://t.me/bsport12" target="_blank" class="hbtn tg">📲 Telegram</a>
       </div>
     </div>
@@ -293,7 +293,7 @@ footer span{color:var(--red)}
           <li>Support Discord</li>
           <li>Tous appareils</li>
         </ul>
-        <a href="https://discord.gg/FABHWRfX" target="_blank" class="pbtn o">Commander →</a>
+        <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="pbtn o">Commander →</a>
       </div>
 
       <!-- 3 MOIS -->
@@ -309,7 +309,7 @@ footer span{color:var(--red)}
           <li>Support Discord</li>
           <li>Tous appareils</li>
         </ul>
-        <a href="https://discord.gg/FABHWRfX" target="_blank" class="pbtn o">Commander →</a>
+        <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="pbtn o">Commander →</a>
       </div>
 
       <!-- 6 MOIS -->
@@ -326,7 +326,7 @@ footer span{color:var(--red)}
           <li>Tous appareils</li>
           <li>-50% vs mensuel</li>
         </ul>
-        <a href="https://discord.gg/FABHWRfX" target="_blank" class="pbtn r">Commander →</a>
+        <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="pbtn r">Commander →</a>
       </div>
 
       <!-- 1 AN -->
@@ -343,7 +343,7 @@ footer span{color:var(--red)}
           <li>Tous appareils</li>
           <li>-67% vs mensuel</li>
         </ul>
-        <a href="https://discord.gg/FABHWRfX" target="_blank" class="pbtn o">Commander →</a>
+        <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="pbtn o">Commander →</a>
       </div>
     </div>
 
@@ -359,7 +359,7 @@ footer span{color:var(--red)}
           <span style="background:#f7931a;color:#fff;font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:5px">₿ Bitcoin</span>
           <span style="background:#627eea;color:#fff;font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:5px">Ξ Ethereum</span>
         </div>
-        <a href="https://discord.gg/FABHWRfX" target="_blank" class="btn-dc">💬 Commander sur Discord</a>
+        <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="btn-dc">💬 Commander sur Discord</a>
       </div>
     </div>
 
@@ -453,7 +453,7 @@ footer span{color:var(--red)}
       <div style="font-size:2rem;margin-bottom:10px">🔥</div>
       <h2 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:2px;margin-bottom:8px">Prêt à regarder ?</h2>
       <p style="color:var(--mut);font-size:.85rem;margin-bottom:20px">Rejoignez plus de 215 membres qui regardent déjà leurs matchs avec nous</p>
-      <a href="https://discord.gg/FABHWRfX" target="_blank" class="btn-dc" style="font-size:.95rem;padding:14px 28px;animation:pglow 2s infinite">💬 Commander maintenant</a>
+      <a href="https://discord.gg/nC9n95ZPjw" target="_blank" class="btn-dc" style="font-size:.95rem;padding:14px 28px;animation:pglow 2s infinite">💬 Commander maintenant</a>
     </div>
 
   </div>
@@ -523,7 +523,7 @@ footer span{color:var(--red)}
 
 <script>
 const PASS     = "bsport2025";
-const DISCORD  = "https://discord.gg/FABHWRfX";
+const DISCORD  = "https://discord.gg/nC9n95ZPjw";
 const TELEGRAM = "https://t.me/bsport12";
 const VPS      = "https://lbshop.store";
 
@@ -824,24 +824,26 @@ async function updateCardViewers(){
   const cards = document.querySelectorAll('.vcount');
   for(const card of cards){
     let key = card.dataset.key;
-    // Extract key from HLS URL if not set directly
     if(!key || key==='default'){
-      const url = card.closest('.scard')?.dataset?.url || '';
-      const match = url.match(/\/hls\/(.+)\.m3u8/);
-      if(match) key = match[1];
+      const scard = card.closest('.scard');
+      const url = scard ? scard.getAttribute('data-url') : '';
+      if(url){
+        const m = url.match(/hls\/(.+)\.m3u8/);
+        if(m) key = m[1];
+      }
     }
     if(!key || key==='default') continue;
     try{
-      const r = await fetch(`${VIEWERS_URL}/count?key=${encodeURIComponent(key)}`);
+      const r = await fetch(VIEWERS_URL+'/count?key='+encodeURIComponent(key));
       const d = await r.json();
       card.textContent = d.viewers;
-    }catch(e){}
+    }catch(e){console.log('viewers err',e)}
   }
 }
 
 window.addEventListener('beforeunload', stopViewers);
 
-window.addEventListener('load',()=>{loadPublic();initSplash();setInterval(updateCardViewers,30000);});
+window.addEventListener('load',()=>{loadPublic();initSplash();updateCardViewers();setInterval(updateCardViewers,30000);});
 </script>
 
 <!-- MENTIONS LEGALES -->
@@ -860,7 +862,7 @@ window.addEventListener('load',()=>{loadPublic();initSplash();setInterval(update
       <h3 style="color:var(--txt);margin-bottom:8px">Responsabilité</h3>
       <p style="margin-bottom:18px">LB Stream agit en qualité d'intermédiaire technique. Conformément aux dispositions légales en vigueur, notre responsabilité ne saurait être engagée du fait des contenus diffusés par des tiers.</p>
       <h3 style="color:var(--txt);margin-bottom:8px">Contact</h3>
-      <p>Pour toute question : <a href="https://discord.gg/FABHWRfX" target="_blank" style="color:var(--red)">Discord</a> ou <a href="https://t.me/bsport12" target="_blank" style="color:var(--red)">Telegram</a></p>
+      <p>Pour toute question : <a href="https://discord.gg/nC9n95ZPjw" target="_blank" style="color:var(--red)">Discord</a> ou <a href="https://t.me/bsport12" target="_blank" style="color:var(--red)">Telegram</a></p>
     </div>
   </div>
   <footer>© 2025 <span>LB Stream</span></footer>
@@ -909,7 +911,7 @@ window.addEventListener('load',()=>{loadPublic();initSplash();setInterval(update
         <li style="margin-bottom:6px">Déclaration de bonne foi</li>
       </ul>
       <h3 style="color:var(--txt);margin-bottom:8px">Contact DMCA</h3>
-      <p style="margin-bottom:18px">Envoyez votre signalement via : <a href="https://discord.gg/FABHWRfX" target="_blank" style="color:var(--red)">Discord</a></p>
+      <p style="margin-bottom:18px">Envoyez votre signalement via : <a href="https://discord.gg/nC9n95ZPjw" target="_blank" style="color:var(--red)">Discord</a></p>
       <p style="font-size:.78rem">Nous traitons chaque signalement dans un délai de 48 heures ouvrées. Tout contenu signalé légitimement sera retiré dans les meilleurs délais.</p>
     </div>
   </div>
