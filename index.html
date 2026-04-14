@@ -613,6 +613,7 @@ async function loadPublic(){
     if(remote.activePopup){setTimeout(()=>showPopupType(remote.activePopup),800);}
   }else loadStreams();
   renderPublic();
+  setTimeout(updateCardViewers, 500);
 }
 
 function renderPublic(){
