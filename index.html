@@ -621,7 +621,7 @@ function renderPublic(){
   if(cnt)cnt.textContent=streams.length;
   if(!streams.length){grid.innerHTML='<div class="no-stream">Aucun stream actif pour le moment</div>';return}
   grid.innerHTML=streams.map(s=>`
-    <div class="scard" onclick="watchStream('${esc(s.url)}','${esc(s.name)}')" data-url="${esc(s.url)}">
+    <div class="scard" data-url="${esc(s.url)}" onclick="watchStream('${esc(s.url)}','${esc(s.name)}')">
       <div class="scard-thumb">
         ${s.thumb?`<img src="${esc(s.thumb)}" alt="" onerror="this.outerHTML='<div class=scard-ph>📺</div>'">`:'<div class="scard-ph">📺</div>'}
         <div class="viewers-badge"><div class="vdot"></div><span class="vcount" data-key="${s.key||'default'}">0</span> viewers</div>
@@ -821,23 +821,19 @@ function stopViewers(){
 }
 
 async function updateCardViewers(){
-  const cards = document.querySelectorAll('.vcount');
-  for(const card of cards){
-    let key = card.dataset.key;
-    if(!key || key==='default'){
-      const scard = card.closest('.scard');
-      const url = scard ? scard.getAttribute('data-url') : '';
-      if(url){
-        const m = url.match(/hls\/(.+)\.m3u8/);
-        if(m) key = m[1];
-      }
-    }
-    if(!key || key==='default') continue;
+  const scards = document.querySelectorAll('.scard');
+  for(const scard of scards){
+    const url = scard.getAttribute('data-url') || '';
+    const card = scard.querySelector('.vcount');
+    if(!card||!url) continue;
+    const m = url.match(/\/hls\/(.+?)\.m3u8/);
+    if(!m) continue;
+    const key = m[1];
     try{
       const r = await fetch(VIEWERS_URL+'/count?key='+encodeURIComponent(key));
       const d = await r.json();
       card.textContent = d.viewers;
-    }catch(e){console.log('viewers err',e)}
+    }catch(e){}
   }
 }
 
