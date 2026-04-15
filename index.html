@@ -608,7 +608,7 @@ function renderStreamList(){
 
 async function loadPublic(){
   const remote=await gistLoad();
-  if(remote&&remote.streams){
+  if(remote&&remote.streams&&remote.streams.length>0){
     streams=remote.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));
     if(remote.activePopup){setTimeout(()=>showPopupType(remote.activePopup),800);}
   }else loadStreams();
@@ -781,7 +781,7 @@ function resetSplash(){localStorage.removeItem('bs:visits');toast('Splash remis 
 
 setInterval(async()=>{
   const r=await gistLoad();if(!r)return;
-  if(r.streams){streams=r.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));renderPublic()}
+  if(r.streams&&r.streams.length>0){streams=r.streams;localStorage.setItem('bs:streams',JSON.stringify(streams));renderPublic()}
   if(r.activePopup){const last=localStorage.getItem('bs:lastPop');if(last!==r.activePopup){localStorage.setItem('bs:lastPop',r.activePopup);showPopupType(r.activePopup)}}
   else localStorage.removeItem('bs:lastPop');
 },20000);
